@@ -36,8 +36,6 @@ public class Editor extends JFrame {
 
         PlayersPanel playersPanel = new PlayersPanel();
 
-        playersPanel.setBackground(Color.MAGENTA);
-
         JPanel etherPanel = new JPanel();
         JPanel enemiesPanel = new JPanel();
         JPanel enemyAttacksPanel = new JPanel();
