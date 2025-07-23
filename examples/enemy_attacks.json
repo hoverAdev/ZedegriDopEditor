@@ -1,0 +1,42 @@
+[
+  {
+    "Num": 1,
+    "Title": "Bite",
+    "Desc": "A single regular bite",
+
+    "Hits": 1,
+    "AOE": false,
+    "Acc": 70,
+    "Mult": 1,
+
+    "Daze_Percent": 80,
+    "Heal": false,
+
+    "Leech": false,
+    "Type": "Phys Attack",
+
+    "Target": "Enemy",
+    "Use_Pot": false,
+    "Flicker": 0,
+    "Points": 20,
+
+    "BURN_TM": 0,
+    "POISON_TM": 0,
+
+    "PHYS_DEF_DB": 0,
+    "PHYS_DEF_TM": 0,
+    "PHYS_DEF_CH": 0,
+
+    "ETH_ATK_DB": 0,
+    "ETH_ATK_TM": 0,
+    "ETH_ATK_CH": 0,
+
+    "ETH_DEF_DB": 0,
+    "ETH_DEF_TM": 0,
+    "ETH_DEF_CH": 0,
+
+    "PHYS_ATK_DB": 0,
+    "PHYS_ATK_TM": 0,
+    "PHYS_ATK_CH": 0
+  }
+]

@@ -1,0 +1,43 @@
+[
+  {
+    "User"  : "Jacob",
+    "Title" : "Power Driver",
+    "Desc"  : "A strong hit charged with mystical force",
+    "EP"    : 1,
+    "Hits"  : 1,
+    "AOE"   : false,
+    "Acc"   : 90,
+    "Mult"  : 2.5,
+    "Daze_Target"  : "",
+    "Daze_Percent" : 0,
+    "Heal"  : 0,
+    "Purge" : false,
+    "Leech" : false,
+    "Type"  : "Attack", //"Self" , "Team"
+
+
+    "BURN_TM":0,
+
+    "POISON_TM":0,
+
+    "PHYS_DEF_DB": 0,
+    "PHYS_DEF_TM": 0,
+    "PHYS_DEF_CH": 0,
+    "PHYS_ATK_DB": 0,
+    "PHYS_ATK_TM": 2,
+    "PHYS_ATK_CH": 10,
+    "PHYS_DEF_UP": false,
+    "PHYS_ATK_UP": false,
+
+    "ETH_DEF_DB": 0,
+    "ETH_DEF_TM": 0,
+    "ETH_DEF_CH": 0,
+    "ETH_ATK_DB": 0,
+    "ETH_ATK_TM": 0,
+    "ETH_ATK_CH": 0,
+    "ETH_DEF_UP": false,
+    "ETH_ATK_UP": false,
+
+    "SPD_UP": 0
+  }
+]

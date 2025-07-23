@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "No Enemy",
+    "Type": "Animal",
+    "HP": 0,
+    "DEF": 0,
+    "EthDEF": 0,
+    "Speed": 255,
+    "Attack": 0,
+    "Potent": 0,
+    "Attacks": [
+      0
+    ]
+  }
+]

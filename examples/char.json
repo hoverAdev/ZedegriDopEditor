@@ -1,0 +1,13 @@
+[
+  {
+    "Name"  : "Jacob",
+    "HP"    : 250,
+    "DEF"   : 0,
+    "EthDEF": 0,
+    "Speed" : 50,
+    "Attack": 80,
+    "Potent": 50,
+    "AP"    : 7,
+    "EP"    : 7
+  }
+]
