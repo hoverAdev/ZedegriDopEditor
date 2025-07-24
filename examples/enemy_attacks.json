@@ -10,7 +10,7 @@
     "Mult": 1,
 
     "Daze_Percent": 80,
-    "Heal": false,
+    "Heal": 0,
 
     "Leech": false,
     "Type": "Phys Attack",
