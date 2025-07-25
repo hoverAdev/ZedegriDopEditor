@@ -1,6 +1,4 @@
-package zedegridop;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
+package zedegridop.gui;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,12 +14,16 @@ public class Editor extends JFrame {
         File file = new File(".");
         System.out.println(file.getAbsolutePath());
 
-        //setLookAndFeel();
+        setLookAndFeel();
         EventQueue.invokeLater(EditorGui::new);
     }
 
+    /**
+     * Sets the look and feel for the editor.
+     */
     private static void setLookAndFeel() {
         String crossPlatformLookAndFeelClassName = UIManager.getCrossPlatformLookAndFeelClassName();
+        UIManager.getSystemLookAndFeelClassName();
         try {
             UIManager.setLookAndFeel(crossPlatformLookAndFeelClassName);
         } catch (Exception e) {

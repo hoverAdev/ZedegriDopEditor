@@ -1,7 +1,8 @@
-package zedegridop;
+package zedegridop.gui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jetbrains.annotations.NotNull;
+import zedegridop.model.EtherAttack;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -11,26 +12,26 @@ import java.awt.*;
 import java.net.URL;
 import java.util.List;
 
-public class EnemiesPanel extends JPanel {
-    private final List<Enemy> enemies;
+public class EthersPanel extends JPanel {
+    private final List<EtherAttack> ethers;
     private final ObjectMapper mapper;
     private final GridBagLayout layout;
 
     // Components
     private JPanel listPanel;
     private DefaultListModel<String> listModel;
-    private JScrollPane enemiesListContainer;
-    private JList<String> enemiesList;
+    private JScrollPane ethersListContainer;
+    private JList<String> ethersList;
 
-    private JButton addEnemyButton;
-    private JButton removeEnemyButton;
+    private JButton addEtherButton;
+    private JButton removeEtherButton;
 
     private JPanel formPanel;
 
     private JLabel filler;
 
-    public EnemiesPanel(@NotNull List<Enemy> enemies, @NotNull ObjectMapper mapper) {
-        this.enemies = enemies;
+    public EthersPanel(@NotNull List<EtherAttack> ethers, @NotNull ObjectMapper mapper) {
+        this.ethers = ethers;
         this.mapper = mapper;
 
         this.layout = new GridBagLayout();
@@ -44,11 +45,11 @@ public class EnemiesPanel extends JPanel {
         // Create components
         createListPanel();
         createListModel();
-        createEnemiesList();
-        createEnemiesListContainer();
+        createEthersList();
+        createEthersListContainer();
 
-        createAddEnemyButton();
-        createRemoveEnemyButton();
+        createAddEtherButton();
+        createRemoveEtherButton();
 
         createFormPanel();
         createFiller();
@@ -57,11 +58,11 @@ public class EnemiesPanel extends JPanel {
     private void initializeLayout() {
         // Add components to layout
         //      List of ethers
-        listPanel.add(enemiesListContainer, GuiFunctions.createTallConstraints(0, 0, 2, 1));
+        listPanel.add(ethersListContainer, GuiFunctions.createTallConstraints(0, 0, 2, 1));
 
         //      Ether list management
-        listPanel.add(addEnemyButton, GuiFunctions.createConstraints(0, 1));
-        listPanel.add(removeEnemyButton, GuiFunctions.createConstraints(1, 1));
+        listPanel.add(addEtherButton, GuiFunctions.createConstraints(0, 1));
+        listPanel.add(removeEtherButton, GuiFunctions.createConstraints(1, 1));
 
         add(listPanel, GuiFunctions.createTallConstraints(0, 0, 1, 1));
 
@@ -74,30 +75,30 @@ public class EnemiesPanel extends JPanel {
         listPanel = new JPanel();
         listPanel.setLayout(new GridBagLayout());
         listPanel.setOpaque(false);
-        listPanel.setBorder(new TitledBorder(new LineBorder(Color.GRAY, 1), "Enemies"));
+        listPanel.setBorder(new TitledBorder(new LineBorder(Color.GRAY, 1), "Ether Attacks"));
     }
 
     private void createListModel() {
         listModel = new DefaultListModel<>();
         listModel.add(0, "None");
     }
-    private void createEnemiesList() {
-        enemiesList = new JList<>(listModel);
-        enemiesList.setOpaque(true);
-        enemiesList.setBackground(Color.WHITE);
-        enemiesList.setSelectedIndex(0);
+    private void createEthersList() {
+            ethersList = new JList<>(listModel);
+            ethersList.setOpaque(true);
+            ethersList.setBackground(Color.WHITE);
+            ethersList.setSelectedIndex(0);
     }
-    private void createEnemiesListContainer() {
+    private void createEthersListContainer() {
         // playersListContainer
-        enemiesListContainer = new JScrollPane(enemiesList);
-        enemiesListContainer.setOpaque(true);
+        ethersListContainer = new JScrollPane(ethersList);
+        ethersListContainer.setOpaque(true);
     }
 
-    private void createAddEnemyButton() {
-        addEnemyButton = new JButton("Add");
+    private void createAddEtherButton() {
+        addEtherButton = new JButton("Add");
     }
-    private void createRemoveEnemyButton() {
-        removeEnemyButton = new JButton("Remove");
+    private void createRemoveEtherButton() {
+        removeEtherButton = new JButton("Remove");
     }
 
     private void createFormPanel() {
@@ -111,7 +112,7 @@ public class EnemiesPanel extends JPanel {
      * Creates an image icon to fill the empty space.
      */
     private void createFiller() {
-        URL iconSrc = this.getClass().getResource("res/enemies.png");
+        URL iconSrc = this.getClass().getResource("res/ethers.png");
         if (iconSrc != null) {
             filler = new JLabel(new ImageIcon(iconSrc));
         }

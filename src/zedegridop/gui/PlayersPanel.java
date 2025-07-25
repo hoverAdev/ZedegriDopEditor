@@ -1,7 +1,8 @@
-package zedegridop;
+package zedegridop.gui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jetbrains.annotations.*;
+import zedegridop.model.Player;
 
 import javax.swing.*;
 import javax.swing.border.*;

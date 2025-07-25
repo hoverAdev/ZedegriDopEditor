@@ -1,7 +1,11 @@
-package zedegridop;
+package zedegridop.gui;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import zedegridop.model.Enemy;
+import zedegridop.model.EnemyAttack;
+import zedegridop.model.EtherAttack;
+import zedegridop.model.Player;
 
 import javax.swing.*;
 import java.awt.*;

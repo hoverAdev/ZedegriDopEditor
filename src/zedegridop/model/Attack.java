@@ -1,10 +1,10 @@
-package zedegridop;
+package zedegridop.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Objects;
 
-public class Attack {
+public abstract class Attack {
     private String title;
     private String description;
     private int hits;

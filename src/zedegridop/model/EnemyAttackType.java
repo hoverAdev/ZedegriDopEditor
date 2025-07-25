@@ -1,4 +1,4 @@
-package zedegridop;
+package zedegridop.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import org.jetbrains.annotations.Contract;

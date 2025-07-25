@@ -1,11 +1,11 @@
-package zedegridop;
+package zedegridop.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.Contract;
 
 import java.util.Objects;
 
-public class Combatant {
+public abstract class Combatant {
     private String name;
     private int hp;
     private int defense;
