@@ -1,11 +1,12 @@
-package zedegridop.gui;
+package com.ambiencetown.zedegridop.gui;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import zedegridop.model.Enemy;
-import zedegridop.model.EnemyAttack;
-import zedegridop.model.EtherAttack;
-import zedegridop.model.Player;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.ambiencetown.zedegridop.model.Enemy;
+import com.ambiencetown.zedegridop.model.EnemyAttack;
+import com.ambiencetown.zedegridop.model.EtherAttack;
+import com.ambiencetown.zedegridop.model.Player;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,7 +34,8 @@ public class EditorGui extends JFrame {
         // Create mapper
         mapper = new ObjectMapper();
         mapper.enable(JsonParser.Feature.ALLOW_COMMENTS);
-
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        
         // Set up window
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(100, 100, 1080, 720);

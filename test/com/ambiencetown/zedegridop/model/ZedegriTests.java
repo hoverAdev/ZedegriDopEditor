@@ -1,13 +1,13 @@
-package zedegridop;
+package com.ambiencetown.zedegridop.model;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import zedegridop.model.*;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,7 +25,7 @@ class ZedegriTests {
         Player expected = new Player();
         expected.setName("Jacob");
         expected.setHp(250);
-        expected.setDef(0);
+        expected.setDefense(0);
         expected.setEtherDefense(0);
         expected.setSpeed(50);
         expected.setAttack(80);
@@ -59,7 +59,7 @@ class ZedegriTests {
         expected.setMult(2.5);
         expected.setDazeTarget("");
         expected.setDazePercent(0);
-        expected.setHeal(0);
+        expected.setHeal(false);
         expected.setPurge(false);
         expected.setLeech(false);
         expected.setType(EtherAttackType.ATTACK);
@@ -71,16 +71,16 @@ class ZedegriTests {
         expected.setPhysicalAttackDebuff(0);
         expected.setPhysicalAttackTime(2);
         expected.setPhysicalAttackChance(10);
-        expected.setPhysicalDefenseUp(false);
-        expected.setPhysicalAttackUp(false);
+        expected.setPhysicalDefenseUp(0);
+        expected.setPhysicalAttackUp(0);
         expected.setEtherDefenseDebuff(0);
         expected.setEtherDefenseTime(0);
         expected.setEtherDefenseChance(0);
         expected.setEtherAttackDebuff(0);
         expected.setEtherAttackTime(0);
         expected.setEtherAttackChance(0);
-        expected.setEtherDefenseUp(false);
-        expected.setEtherAttackUp(false);
+        expected.setEtherDefenseUp(0);
+        expected.setEtherAttackUp(0);
         expected.setSpeedUp(0);
 
         File file = new File("examples/ether.json");
@@ -102,12 +102,12 @@ class ZedegriTests {
         expected.setName("No Enemy");
         expected.setType("Animal");
         expected.setHp(0);
-        expected.setDef(0);
+        expected.setDefense(0);
         expected.setEtherDefense(0);
         expected.setSpeed(255);
         expected.setAttack(0);
         expected.setPotential(0);
-        expected.setAttacks(new ArrayList<>());
+        expected.setAttacks(new ArrayList<>(List.of(0)));
 
         File file = new File("examples/enemies.json");
         Enemy actual;
@@ -133,7 +133,7 @@ class ZedegriTests {
         expected.setAccuracy(70);
         expected.setMult(1);
         expected.setDazePercent(80);
-        expected.setHeal(0);
+        expected.setHeal(false);
         expected.setLeech(false);
         expected.setType(EnemyAttackType.PHYSICAL_ATTACK);
         expected.setTarget("Enemy");

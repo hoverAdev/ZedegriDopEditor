@@ -1,4 +1,4 @@
-package zedegridop.gui;
+package com.ambiencetown.zedegridop.gui;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -75,5 +75,9 @@ public class GuiFunctions {
     @Contract(value = "_ -> new", pure = true)
     public static @NotNull SpinnerNumberModel getNewNumberModel(int value) {
         return new SpinnerNumberModel(value, 0, Integer.MAX_VALUE, 1);
+    }
+
+    public static void printSwingError(String message, JComponent parent) {
+        JOptionPane.showMessageDialog(parent, message, "Warning!", JOptionPane.WARNING_MESSAGE);
     }
 }

@@ -1,8 +1,8 @@
-package zedegridop.gui;
+package com.ambiencetown.zedegridop.gui;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jetbrains.annotations.NotNull;
-import zedegridop.model.Enemy;
+import com.ambiencetown.zedegridop.model.Enemy;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
