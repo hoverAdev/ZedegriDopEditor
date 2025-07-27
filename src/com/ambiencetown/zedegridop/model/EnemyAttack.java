@@ -23,10 +23,10 @@ public class EnemyAttack extends Attack implements Comparable<EnemyAttack> {
   /** Whether to calculate damage based on attack or potential. */
   private boolean usePotential;
 
-  /** TODO: Ask Fiora */
+  /** The number of turns Flicker lasts. */
   private int flicker;
 
-  /** TODO: Ask Fiora */
+  /** The number of times the attack may be used. */
   private int points;
 
   /** Constructs a new EnemyAttack with default values. */
@@ -103,25 +103,33 @@ public class EnemyAttack extends Attack implements Comparable<EnemyAttack> {
     this.usePotential = usePotential;
   }
 
-  /** TODO */
+  /** {@return the number of turns Flicker lasts.} */
   @JsonProperty("Flicker")
   public int getFlicker() {
     return flicker;
   }
 
-  /** TODO */
+  /**
+   * Sets the number of turns Flicker lasts.
+   *
+   * @param flicker the number of turns Flicker lasts.
+   */
   @JsonProperty("Flicker")
   public void setFlicker(int flicker) {
     this.flicker = flicker;
   }
 
-  /** TODO */
+  /** {@return the number of times the attack may be used.} */
   @JsonProperty("Points")
   public int getPoints() {
     return points;
   }
 
-  /** TODO */
+  /**
+   * Sets the number of times the attack may be used.
+   *
+   * @param points the number of times the attack may be used.
+   */
   @JsonProperty("Points")
   public void setPoints(int points) {
     this.points = points;
@@ -166,6 +174,12 @@ public class EnemyAttack extends Attack implements Comparable<EnemyAttack> {
 
   @Override
   public int compareTo(@NotNull EnemyAttack o) {
-    return Integer.compare(this.getNumber(), o.getNumber());
+    int comp = Integer.compare(this.getNumber(), o.getNumber());
+
+    if (comp == 0) {
+      comp = this.getTitle().compareTo(o.getTitle());
+    }
+
+    return comp;
   }
 }

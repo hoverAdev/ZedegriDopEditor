@@ -1,5 +1,6 @@
 package com.ambiencetown.zedegridop.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 import org.jetbrains.annotations.Contract;
@@ -23,7 +24,7 @@ public abstract class Combatant {
   /** The ether defense of the combatant. */
   private int etherDefense;
 
-  /** The speed of the combatant. TODO: Add detail about how to interpret the value */
+  /** The speed of the combatant. Lower values represent faster speeds. */
   private int speed;
 
   /** The attack of the combatant. */
@@ -108,19 +109,42 @@ public abstract class Combatant {
   }
 
   /** {@return the speed of the combatant.} */
-  @JsonProperty("Speed")
+  @JsonIgnore
   public int getSpeed() {
     return speed;
   }
 
   /**
-   * Sets the speed of the combatant.
+   * Special serializer to enable compatibility with existing code.
+   *
+   * @return The value of {@code speed}, or {@code "inf"} if speed is 255.
+   */
+  @JsonProperty("Speed")
+  public Object getSpeedJson() {
+    if (speed >= 255) {
+      return "inf";
+    } else return speed;
+  }
+
+  /**
+   * Sets the speed of the combatant. The speed is bound between 0 and 255.
    *
    * @param speed the speed of the combatant.
    */
-  @JsonProperty("Speed")
+  @JsonIgnore
   public void setSpeed(int speed) {
-    this.speed = speed;
+    if (speed < 0) this.speed = 0;
+    else if (speed > 255) this.speed = 255;
+    else this.speed = speed;
+  }
+
+  @JsonProperty("Speed")
+  public void setSpeedJson(Object speed) {
+    if ("inf".equals(speed)) setSpeed(255);
+    else if (speed instanceof Integer) setSpeed((Integer) speed);
+    else
+      throw new IllegalArgumentException(
+          "Input " + speed.toString() + " not positive infinity or an integer");
   }
 
   /** {@return the attack of the combatant.} */

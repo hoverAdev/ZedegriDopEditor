@@ -10,7 +10,7 @@ import java.util.Objects;
  * @author Serenity Montgomery
  */
 public class Player extends Combatant {
-  /** The amount of AP the player has. (TODO: Expand acronym) */
+  /** The amount of Attack Points the player has. Must be between 4 and 7 inclusive. */
   private int ap;
 
   /** The amount of Ether Points the player has. */
@@ -23,20 +23,20 @@ public class Player extends Combatant {
     this.ep = 0;
   }
 
-  /** TODO: Expand acronym {@return the amount of AP the player has.} */
+  /** {@return the amount of Attack Points the player has.} */
   @JsonProperty("AP")
   public int getAp() {
     return ap;
   }
 
   /**
-   * TODO: Expand acronym Sets the amount of AP the player has.
+   * Sets the amount of Attack Points the player has. Must be between 4 and 7 inclusive.
    *
-   * @param ap the amount of AP the player has.
+   * @param ap the amount of Attack Points the player has.
    */
   @JsonProperty("AP")
   public void setAp(int ap) {
-    this.ap = ap;
+    this.ap = Math.max(4, Math.min(ap, 7));
   }
 
   /** {@return the amount of Ether Points the player has.} */

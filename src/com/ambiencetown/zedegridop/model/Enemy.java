@@ -14,26 +14,26 @@ import org.jetbrains.annotations.NotNull;
  * @author Serenity Montgomery
  */
 public class Enemy extends Combatant {
-  /** The type of the enemy. TODO: Consider enumerating the possible options. */
-  private String type;
+  /** The type of the enemy. */
+  private EnemyType type;
 
   /**
    * The attacks of the enemy. Stored as a list of attack numbers.
    *
-   * @see com.ambiencetown.zedegridop.model.EnemyAttack
+   * @see EnemyAttack
    */
   private List<Integer> attacks;
 
   /** Constructs an Enemy with the default values. */
   public Enemy() {
     super();
-    this.type = "Animal";
+    this.type = EnemyType.ANIMAL;
     this.attacks = new ArrayList<>();
   }
 
   /** {@return the type of the enemy.} */
   @JsonProperty("Type")
-  public String getType() {
+  public EnemyType getType() {
     return type;
   }
 
@@ -43,7 +43,7 @@ public class Enemy extends Combatant {
    * @param type the type of the enemy.
    */
   @JsonProperty("Type")
-  public void setType(@NotNull String type) {
+  public void setType(@NotNull EnemyType type) {
     this.type = type;
   }
 

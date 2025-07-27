@@ -3,15 +3,14 @@ package com.ambiencetown.zedegridop.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents an attack in the Zedegri DOP engine. Notably, attacks are not necessarily offensive:
  * attacks may also inflict healing and buffs to teammates.
  *
  * <p>This class includes logic for dealing with JSON serialization and deserialization using
- * Jackson (<a
- * href="https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.19.0/">
- * Maven</a>). The {@code heal} field is treated specially: it is serialized as {@code 0} or {@code
+ * Jackson. The {@code heal} field is treated specially: it is serialized as {@code 0} or {@code
  * 1}, corresponding to {@code false} and {@code true} respectively.
  *
  * @author Fiora Satou
@@ -33,11 +32,11 @@ public abstract class Attack {
   /** The accuracy of the attack as an integer percentage. */
   private int accuracy;
 
-  /** TODO: Ask Fiora */
-  private double mult;
+  /** Modifies the attack damage by a float multiplier. */
+  private double multiplier;
 
-  /** TODO: Ask Fiora */
-  private int dazePercent;
+  /** The chance that the attack will inflict Daze as an integer percentage. */
+  private int dazeChance;
 
   /** Whether the attack is a healing attack. */
   private boolean heal;
@@ -51,41 +50,41 @@ public abstract class Attack {
   /** The number of turns to inflict Poison. */
   private int poisonTime;
 
-  /** TODO: Ask Fiora */
-  private int physicalDefenseDebuff;
+  /** The physical defense buff or debuff applied by the attack. */
+  private EffectMultiplier physicalDefenseEffect;
 
-  /** The number of turns to inflict Physical Defense Down. */
-  private int physicalDefenseTime;
+  /** The number of turns the physical defense buff or debuff lasts. */
+  private int physicalDefenseEffectTime;
 
-  /** TODO: Ask Fiora */
-  private int physicalDefenseChance;
+  /** The chance to inflict the physical defense buff or debuff as an integer percentage. */
+  private int physicalDefenseEffectChance;
 
-  /** TODO: Ask Fiora */
-  private int physicalAttackDebuff;
+  /** The physical attack buff or debuff applied by the attack. */
+  private EffectMultiplier physicalAttackEffect;
 
-  /** The number of turns to inflict Physical Attack Down. */
-  private int physicalAttackTime;
+  /** The number of turns the physical attack buff or debuff lasts. */
+  private int physicalAttackEffectTime;
 
-  /** TODO: Ask Fiora */
-  private int physicalAttackChance;
+  /** The chance to inflict the physical attack buff or debuff as an integer percentage. */
+  private int physicalAttackEffectChance;
 
-  /** TODO: Ask Fiora */
-  private int etherDefenseDebuff;
+  /** The ether defense buff or debuff applied by the attack. */
+  private EffectMultiplier etherDefenseEffect;
 
-  /** The number of turns to inflict Ether Defense Down. */
-  private int etherDefenseTime;
+  /** The number of turns the ether defense buff or debuff lasts. */
+  private int etherDefenseEffectTime;
 
-  /** TODO: Ask Fiora */
-  private int etherDefenseChance;
+  /** The chance to inflict the ether defense buff or debuff as an integer percentage. */
+  private int etherDefenseEffectChance;
 
-  /** TODO: Ask Fiora */
-  private int etherAttackDebuff;
+  /** The potential buff or debuff applied by the attack. */
+  private EffectMultiplier potentialEffect;
 
-  /** The number of turns to inflict Ether Attack Down. */
-  private int etherAttackTime;
+  /** The number of turns the potential buff or debuff lasts. */
+  private int potentialEffectTime;
 
-  /** TODO: Ask Fiora */
-  private int etherAttackChance;
+  /** The chance to inflict the potential buff or debuff as an integer percentage. */
+  private int potentialEffectChance;
 
   /** Constructs an Attack with the default values. */
   protected Attack() {
@@ -94,24 +93,24 @@ public abstract class Attack {
     this.hits = 0;
     this.aoe = false;
     this.accuracy = 0;
-    this.mult = 0.0;
-    this.dazePercent = 0;
+    this.multiplier = 0.0;
+    this.dazeChance = 0;
     this.heal = false;
     this.leech = false;
     this.burnTime = 0;
     this.poisonTime = 0;
-    this.physicalDefenseDebuff = 0;
-    this.physicalDefenseTime = 0;
-    this.physicalDefenseChance = 0;
-    this.physicalAttackDebuff = 0;
-    this.physicalAttackTime = 0;
-    this.physicalAttackChance = 0;
-    this.etherDefenseDebuff = 0;
-    this.etherDefenseTime = 0;
-    this.etherDefenseChance = 0;
-    this.etherAttackDebuff = 0;
-    this.etherAttackTime = 0;
-    this.etherAttackChance = 0;
+    this.physicalDefenseEffect = EffectMultiplier.TIMES_05;
+    this.physicalDefenseEffectTime = 0;
+    this.physicalDefenseEffectChance = 0;
+    this.physicalAttackEffect = EffectMultiplier.TIMES_05;
+    this.physicalAttackEffectTime = 0;
+    this.physicalAttackEffectChance = 0;
+    this.etherDefenseEffect = EffectMultiplier.TIMES_05;
+    this.etherDefenseEffectTime = 0;
+    this.etherDefenseEffectChance = 0;
+    this.potentialEffect = EffectMultiplier.TIMES_05;
+    this.potentialEffectTime = 0;
+    this.potentialEffectChance = 0;
   }
 
   /** {@return the title of the attack.} */
@@ -126,7 +125,7 @@ public abstract class Attack {
    * @param title the title of the attack.
    */
   @JsonProperty("Title")
-  public void setTitle(String title) {
+  public void setTitle(@NotNull String title) {
     this.title = title;
   }
 
@@ -142,7 +141,7 @@ public abstract class Attack {
    * @param description the description of the attack.
    */
   @JsonProperty("Desc")
-  public void setDescription(String description) {
+  public void setDescription(@NotNull String description) {
     this.description = description;
   }
 
@@ -192,34 +191,41 @@ public abstract class Attack {
    */
   @JsonProperty("Acc")
   public void setAccuracy(int accuracy) {
-    if (accuracy < 0) accuracy = 0;
-    else if (accuracy > 100) accuracy = 100;
-
-    this.accuracy = accuracy;
+    this.accuracy = constrainToIntegerPercentage(accuracy);
   }
 
-  /** TODO */
+  /** {@return the attack damage modifier as a float multiplier.} */
   @JsonProperty("Mult")
-  public double getMult() {
-    return mult;
+  public double getMultiplier() {
+    return multiplier;
   }
 
-  /** TODO */
+  /**
+   * Sets the attack damage modifier as a float multiplier.
+   *
+   * @param multiplier the attack damage modifier as a float multiplier.
+   */
   @JsonProperty("Mult")
-  public void setMult(double mult) {
-    this.mult = mult;
+  public void setMultiplier(double multiplier) {
+    this.multiplier = multiplier;
   }
 
-  /** TODO */
+  /** {@return the chance that the attack will inflict Daze as an integer percentage.} */
   @JsonProperty("Daze_Percent")
-  public int getDazePercent() {
-    return dazePercent;
+  public int getDazeChance() {
+    return dazeChance;
   }
 
-  /** TODO */
+  /**
+   * Sets the chance that the attack will inflict Daze as an integer percentage. The input will be
+   * bound between 0-100; values outside of these bounds will be rounded to the nearest valid
+   * integer.
+   *
+   * @param dazeChance the chance that the attack will inflict Daze as an integer percentage.
+   */
   @JsonProperty("Daze_Percent")
-  public void setDazePercent(int dazePercent) {
-    this.dazePercent = dazePercent;
+  public void setDazeChance(int dazeChance) {
+    this.dazeChance = constrainToIntegerPercentage(dazeChance);
   }
 
   /** {@return whether the attack is a healing attack.} */
@@ -308,164 +314,307 @@ public abstract class Attack {
     this.poisonTime = poisonTime;
   }
 
-  /** TODO */
+  /** {@return the physical defense buff or debuff applied by the attack.} */
+  @JsonIgnore
+  public EffectMultiplier getPhysicalDefenseEffect() {
+    return physicalDefenseEffect;
+  }
+
+  /**
+   * Special serializer to enable compatibility with existing code.
+   *
+   * @return The integer representation of the physical defense buff or debuff.
+   * @see Attack#getPhysicalDefenseEffect()
+   */
   @JsonProperty("PHYS_DEF_DB")
-  public int getPhysicalDefenseDebuff() {
-    return physicalDefenseDebuff;
+  public int getPhysicalDefenseEffectJson() {
+    return physicalDefenseEffect.toInt();
   }
 
-  /** TODO */
+  /**
+   * Sets the physical buff or debuff applied by the attack.
+   *
+   * @param physicalDefenseEffect the physical buff or debuff applied by the attack.
+   */
+  @JsonIgnore
+  public void setPhysicalDefenseEffect(@NotNull EffectMultiplier physicalDefenseEffect) {
+    this.physicalDefenseEffect = physicalDefenseEffect;
+  }
+
+  /**
+   * Special deserializer to enable compatibility with existing code.
+   *
+   * @param physDefDb The value read from the JSON file.
+   * @see Attack#setPhysicalDefenseEffect(EffectMultiplier)
+   */
   @JsonProperty("PHYS_DEF_DB")
-  public void setPhysicalDefenseDebuff(int physicalDefenseDebuff) {
-    this.physicalDefenseDebuff = physicalDefenseDebuff;
+  public void setPhysicalDefenseEffectJson(int physDefDb) {
+    this.physicalDefenseEffect = EffectMultiplier.fromInt(physDefDb);
   }
 
-  /** {@return the number of turns to inflict Physical Defense Down.} */
+  /** {@return the number of turns the physical defense buff or debuff lasts.} */
   @JsonProperty("PHYS_DEF_TM")
-  public int getPhysicalDefenseTime() {
-    return physicalDefenseTime;
+  public int getPhysicalDefenseEffectTime() {
+    return physicalDefenseEffectTime;
   }
 
   /**
-   * Sets the number of turns to inflict Physical Defense Down.
+   * Sets the number of turns the physical defense buff or debuff lasts.
    *
-   * @param physicalDefenseTime the number of turns to inflict Physical Defense Down.
+   * @param physicalDefenseEffectTime the number of turns the physical defense buff or debuff lasts.
    */
   @JsonProperty("PHYS_DEF_TM")
-  public void setPhysicalDefenseTime(int physicalDefenseTime) {
-    this.physicalDefenseTime = physicalDefenseTime;
+  public void setPhysicalDefenseEffectTime(int physicalDefenseEffectTime) {
+    this.physicalDefenseEffectTime = physicalDefenseEffectTime;
   }
 
-  /** TODO */
+  /**
+   * {@return the chance to inflict the physical defense buff or debuff as an integer percentage.}
+   */
   @JsonProperty("PHYS_DEF_CH")
-  public int getPhysicalDefenseChance() {
-    return physicalDefenseChance;
+  public int getPhysicalDefenseEffectChance() {
+    return physicalDefenseEffectChance;
   }
 
-  /** TODO */
+  /**
+   * Sets the chance to inflict the physical defense buff or debuff as an integer percentage. The
+   * input will be bound between 0-100; values outside of these bounds will be rounded to the
+   * nearest valid integer.
+   *
+   * @param physicalDefenseEffectChance the chance to inflict the physical defense buff or debuff as
+   *     an integer percentage.
+   */
   @JsonProperty("PHYS_DEF_CH")
-  public void setPhysicalDefenseChance(int physicalDefenseChance) {
-    this.physicalDefenseChance = physicalDefenseChance;
+  public void setPhysicalDefenseEffectChance(int physicalDefenseEffectChance) {
+    this.physicalDefenseEffectChance = constrainToIntegerPercentage(physicalDefenseEffectChance);
   }
 
-  /** TODO */
+  /** {@return the physical attack buff or debuff applied by the attack.} */
+  @JsonIgnore
+  public EffectMultiplier getPhysicalAttackEffect() {
+    return physicalAttackEffect;
+  }
+
+  /**
+   * Special serializer to enable compatibility with existing code.
+   *
+   * @return the integer representation of the physical attack buff or debuff.
+   * @see Attack#getPhysicalAttackEffect()
+   */
   @JsonProperty("PHYS_ATK_DB")
-  public int getPhysicalAttackDebuff() {
-    return physicalAttackDebuff;
+  public int getPhysicalAttackEffectJson() {
+    return physicalAttackEffect.toInt();
   }
 
-  /** TODO */
+  /**
+   * Sets the physical attack buff or debuff applied by the attack.
+   *
+   * @param physicalAttackEffect the physical attack buff or debuff applied by the attack.
+   */
+  @JsonIgnore
+  public void setPhysicalAttackEffect(@NotNull EffectMultiplier physicalAttackEffect) {
+    this.physicalAttackEffect = physicalAttackEffect;
+  }
+
+  /**
+   * Special deserializer to enable compatibility with existing code.
+   *
+   * @param physAtkDb the value read from the JSON file.
+   * @see Attack#setPhysicalAttackEffect(EffectMultiplier)
+   */
   @JsonProperty("PHYS_ATK_DB")
-  public void setPhysicalAttackDebuff(int physicalAttackDebuff) {
-    this.physicalAttackDebuff = physicalAttackDebuff;
+  public void setPhysicalAttackEffectJson(int physAtkDb) {
+    this.physicalAttackEffect = EffectMultiplier.fromInt(physAtkDb);
   }
 
-  /** {@return the number of turns to inflict Physical Attack Down.} */
+  /** {@return the number of turns the physical attack buff or debuff lasts.} */
   @JsonProperty("PHYS_ATK_TM")
-  public int getPhysicalAttackTime() {
-    return physicalAttackTime;
+  public int getPhysicalAttackEffectTime() {
+    return physicalAttackEffectTime;
   }
 
   /**
-   * Sets the number of turns to inflict Physical Attack Down.
+   * Sets the number of turns the physical attack buff or debuff lasts.
    *
-   * @param physicalAttackTime the number of turns to inflict Physical Attack Down
+   * @param physicalAttackEffectTime the number of turns the physical attack buff or debuff lasts.
    */
   @JsonProperty("PHYS_ATK_TM")
-  public void setPhysicalAttackTime(int physicalAttackTime) {
-    this.physicalAttackTime = physicalAttackTime;
-  }
-
-  /** TODO */
-  @JsonProperty("PHYS_ATK_CH")
-  public int getPhysicalAttackChance() {
-    return physicalAttackChance;
-  }
-
-  /** TODO */
-  @JsonProperty("PHYS_ATK_CH")
-  public void setPhysicalAttackChance(int physicalAttackChance) {
-    this.physicalAttackChance = physicalAttackChance;
-  }
-
-  /** TODO */
-  @JsonProperty("ETH_DEF_DB")
-  public int getEtherDefenseDebuff() {
-    return etherDefenseDebuff;
-  }
-
-  /** TODO */
-  @JsonProperty("ETH_DEF_DB")
-  public void setEtherDefenseDebuff(int etherDefenseDebuff) {
-    this.etherDefenseDebuff = etherDefenseDebuff;
-  }
-
-  /** {@return the number of turns to inflict Ether Defense Down.} */
-  @JsonProperty("ETH_DEF_TM")
-  public int getEtherDefenseTime() {
-    return etherDefenseTime;
+  public void setPhysicalAttackEffectTime(int physicalAttackEffectTime) {
+    this.physicalAttackEffectTime = physicalAttackEffectTime;
   }
 
   /**
-   * Sets the number of turns to inflict Ether Defense Down.
-   *
-   * @param etherDefenseTime the number of turns to inflict Ether Defense Down.
+   * {@return the chance to inflict the physical attack buff or debuff as an integer percentage.}
    */
-  @JsonProperty("ETH_DEF_TM")
-  public void setEtherDefenseTime(int etherDefenseTime) {
-    this.etherDefenseTime = etherDefenseTime;
-  }
-
-  /** TODO */
-  @JsonProperty("ETH_DEF_CH")
-  public int getEtherDefenseChance() {
-    return etherDefenseChance;
-  }
-
-  /** TODO */
-  @JsonProperty("ETH_DEF_CH")
-  public void setEtherDefenseChance(int etherDefenseChance) {
-    this.etherDefenseChance = etherDefenseChance;
-  }
-
-  /** TODO */
-  @JsonProperty("ETH_ATK_DB")
-  public int getEtherAttackDebuff() {
-    return etherAttackDebuff;
-  }
-
-  /** TODO */
-  @JsonProperty("ETH_ATK_DB")
-  public void setEtherAttackDebuff(int etherAttackDebuff) {
-    this.etherAttackDebuff = etherAttackDebuff;
-  }
-
-  /** {@return the number of turns to inflict Ether Attack Down.} */
-  @JsonProperty("ETH_ATK_TM")
-  public int getEtherAttackTime() {
-    return etherAttackTime;
+  @JsonProperty("PHYS_ATK_CH")
+  public int getPhysicalAttackEffectChance() {
+    return physicalAttackEffectChance;
   }
 
   /**
-   * Sets the number of turns to inflict Ether Attack Down.
+   * Sets the chance to inflict the physical attack buff or debuff as an integer percentage.
    *
-   * @param etherAttackTime the number of turns to inflict Ether Attack Down.
+   * @param physicalAttackEffectChance the chance to inflict the physical attack buff or debuff as
+   *     an integer percentage.
+   */
+  @JsonProperty("PHYS_ATK_CH")
+  public void setPhysicalAttackEffectChance(int physicalAttackEffectChance) {
+    this.physicalAttackEffectChance = constrainToIntegerPercentage(physicalAttackEffectChance);
+  }
+
+  /** {@return the ether defense buff or debuff applied by the attack.} */
+  @JsonIgnore
+  public EffectMultiplier getEtherDefenseEffect() {
+    return etherDefenseEffect;
+  }
+
+  /**
+   * Special serializer to enable compatibility with existing code.
+   *
+   * @return the integer representation of the ether defense buff or debuff.
+   * @see Attack#getEtherDefenseEffect()
+   */
+  @JsonProperty("ETH_DEF_DB")
+  public int getEtherDefenseEffectJson() {
+    return etherDefenseEffect.toInt();
+  }
+
+  /**
+   * Sets the ether defense buff or debuff applied by the attack.
+   *
+   * @param etherDefenseEffect the ether defense buff or debuff applied by the attack.
+   */
+  @JsonIgnore
+  public void setEtherDefenseEffect(@NotNull EffectMultiplier etherDefenseEffect) {
+    this.etherDefenseEffect = etherDefenseEffect;
+  }
+
+  /**
+   * Special deserializer to enable compatibility with existing code.
+   *
+   * @param ethDefDb The value read from the JSON file.
+   * @see Attack#setEtherDefenseEffect(EffectMultiplier)
+   */
+  @JsonProperty("ETH_DEF_DB")
+  public void setEtherDefenseEffectJson(int ethDefDb) {
+    this.etherDefenseEffect = EffectMultiplier.fromInt(ethDefDb);
+  }
+
+  /** {@return the number of turns the ether defense buff or debuff lasts.} */
+  @JsonProperty("ETH_DEF_TM")
+  public int getEtherDefenseEffectTime() {
+    return etherDefenseEffectTime;
+  }
+
+  /**
+   * Sets the number of turns the ether defense buff or debuff lasts.
+   *
+   * @param etherDefenseEffectTime the number of turns the ether defense buff or debuff lasts.
+   */
+  @JsonProperty("ETH_DEF_TM")
+  public void setEtherDefenseEffectTime(int etherDefenseEffectTime) {
+    this.etherDefenseEffectTime = etherDefenseEffectTime;
+  }
+
+  /** {@return the chance to inflict the ether defense buff or debuff as an integer percentage.} */
+  @JsonProperty("ETH_DEF_CH")
+  public int getEtherDefenseEffectChance() {
+    return etherDefenseEffectChance;
+  }
+
+  /**
+   * Sets the chance to inflict the ether defense buff or debuff as an integer percentage.
+   *
+   * @param etherDefenseEffectChance the chance to inflict the ether defense buff or debuff as an
+   *     integer percentage.
+   */
+  @JsonProperty("ETH_DEF_CH")
+  public void setEtherDefenseEffectChance(int etherDefenseEffectChance) {
+    this.etherDefenseEffectChance = constrainToIntegerPercentage(etherDefenseEffectChance);
+  }
+
+  /** {@return the potential buff or debuff applied by the attack.} */
+  @JsonIgnore
+  public EffectMultiplier getPotentialEffect() {
+    return potentialEffect;
+  }
+
+  /**
+   * Special serializer to enable compatibility with existing code.
+   *
+   * @return the integer representation of the potential buff or debuff.
+   * @see Attack#getPotentialEffect()
+   */
+  @JsonProperty("ETH_ATK_DB")
+  public int getPotentialEffectJson() {
+    return potentialEffect.toInt();
+  }
+
+  /**
+   * Sets the potential buff or debuff applied by the attack.
+   *
+   * @param potentialEffect the potential buff or debuff applied by the attack.
+   */
+  @JsonIgnore
+  public void setPotentialEffect(@NotNull EffectMultiplier potentialEffect) {
+    this.potentialEffect = potentialEffect;
+  }
+
+  /**
+   * Special deserializer to enable compatibility with existing code.
+   *
+   * @param ethAtkDb the value read from the JSON file.
+   * @see Attack#setPotentialEffect(EffectMultiplier)
+   */
+  @JsonProperty("ETH_ATK_DB")
+  public void setPotentialEffectJson(int ethAtkDb) {
+    this.potentialEffect = EffectMultiplier.fromInt(ethAtkDb);
+  }
+
+  /** {@return the number of turns the potential buff or debuff lasts.} */
+  @JsonProperty("ETH_ATK_TM")
+  public int getPotentialEffectTime() {
+    return potentialEffectTime;
+  }
+
+  /**
+   * Sets the number of turns the potential buff or debuff lasts.
+   *
+   * @param potentialEffectTime the number of turns the potential buff or debuff lasts.
    */
   @JsonProperty("ETH_ATK_TM")
-  public void setEtherAttackTime(int etherAttackTime) {
-    this.etherAttackTime = etherAttackTime;
+  public void setPotentialEffectTime(int potentialEffectTime) {
+    this.potentialEffectTime = potentialEffectTime;
   }
 
-  /** TODO */
+  /** {@return the chance to inflict the potential buff or debuff as an integer percentage.} */
   @JsonProperty("ETH_ATK_CH")
-  public int getEtherAttackChance() {
-    return etherAttackChance;
+  public int getPotentialEffectChance() {
+    return potentialEffectChance;
   }
 
-  /** TODO */
+  /**
+   * Sets the chance to inflict the potential buff or debuff as an integer percentage. The input
+   * will be bound between 0-100; values outside of these bounds will be rounded to the nearest
+   * valid integer.
+   *
+   * @param potentialEffectChance the chance to inflict the potential buff or debuff as an integer
+   *     percentage.
+   */
   @JsonProperty("ETH_ATK_CH")
-  public void setEtherAttackChance(int etherAttackChance) {
-    this.etherAttackChance = etherAttackChance;
+  public void setPotentialEffectChance(int potentialEffectChance) {
+    this.potentialEffectChance = constrainToIntegerPercentage(potentialEffectChance);
+  }
+
+  /**
+   * Limits an integer to the integer percentage range 0-100 inclusive.
+   * Values outside the bounds will be rounded to the nearest valid value.
+   *
+   * @param value The integer to constrain.
+   * @return The constrained integer percentage.
+   */
+  private int constrainToIntegerPercentage(int value) {
+    return Math.max(Math.min(value, 100), 0);
   }
 
   @Override
@@ -474,24 +623,24 @@ public abstract class Attack {
     return hits == attack.hits
         && aoe == attack.aoe
         && accuracy == attack.accuracy
-        && Double.compare(mult, attack.mult) == 0
-        && dazePercent == attack.dazePercent
+        && Double.compare(multiplier, attack.multiplier) == 0
+        && dazeChance == attack.dazeChance
         && heal == attack.heal
         && leech == attack.leech
         && burnTime == attack.burnTime
         && poisonTime == attack.poisonTime
-        && physicalDefenseDebuff == attack.physicalDefenseDebuff
-        && physicalDefenseTime == attack.physicalDefenseTime
-        && physicalDefenseChance == attack.physicalDefenseChance
-        && physicalAttackDebuff == attack.physicalAttackDebuff
-        && physicalAttackTime == attack.physicalAttackTime
-        && physicalAttackChance == attack.physicalAttackChance
-        && etherDefenseDebuff == attack.etherDefenseDebuff
-        && etherDefenseTime == attack.etherDefenseTime
-        && etherDefenseChance == attack.etherDefenseChance
-        && etherAttackDebuff == attack.etherAttackDebuff
-        && etherAttackTime == attack.etherAttackTime
-        && etherAttackChance == attack.etherAttackChance
+        && physicalDefenseEffect == attack.physicalDefenseEffect
+        && physicalDefenseEffectTime == attack.physicalDefenseEffectTime
+        && physicalDefenseEffectChance == attack.physicalDefenseEffectChance
+        && physicalAttackEffect == attack.physicalAttackEffect
+        && physicalAttackEffectTime == attack.physicalAttackEffectTime
+        && physicalAttackEffectChance == attack.physicalAttackEffectChance
+        && etherDefenseEffect == attack.etherDefenseEffect
+        && etherDefenseEffectTime == attack.etherDefenseEffectTime
+        && etherDefenseEffectChance == attack.etherDefenseEffectChance
+        && potentialEffect == attack.potentialEffect
+        && potentialEffectTime == attack.potentialEffectTime
+        && potentialEffectChance == attack.potentialEffectChance
         && Objects.equals(title, attack.title)
         && Objects.equals(description, attack.description);
   }
@@ -504,24 +653,24 @@ public abstract class Attack {
         hits,
         aoe,
         accuracy,
-        mult,
-        dazePercent,
+        multiplier,
+            dazeChance,
         heal,
         leech,
         burnTime,
         poisonTime,
-        physicalDefenseDebuff,
-        physicalDefenseTime,
-        physicalDefenseChance,
-        physicalAttackDebuff,
-        physicalAttackTime,
-        physicalAttackChance,
-        etherDefenseDebuff,
-        etherDefenseTime,
-        etherDefenseChance,
-        etherAttackDebuff,
-        etherAttackTime,
-        etherAttackChance);
+        physicalDefenseEffect,
+        physicalDefenseEffectTime,
+        physicalDefenseEffectChance,
+        physicalAttackEffect,
+        physicalAttackEffectTime,
+        physicalAttackEffectChance,
+        etherDefenseEffect,
+        etherDefenseEffectTime,
+        etherDefenseEffectChance,
+        potentialEffect,
+        potentialEffectTime,
+        potentialEffectChance);
   }
 
   @Override
@@ -539,10 +688,10 @@ public abstract class Attack {
         + aoe
         + ", accuracy="
         + accuracy
-        + ", mult="
-        + mult
+        + ", multiplier="
+        + multiplier
         + ", dazePercent="
-        + dazePercent
+        + dazeChance
         + ", heal="
         + heal
         + ", leech="
@@ -551,30 +700,30 @@ public abstract class Attack {
         + burnTime
         + ", poisonTime="
         + poisonTime
-        + ", physicalDefenseDebuff="
-        + physicalDefenseDebuff
-        + ", physicalDefenseTime="
-        + physicalDefenseTime
-        + ", physicalDefenseChance="
-        + physicalDefenseChance
-        + ", physicalAttackDebuff="
-        + physicalAttackDebuff
-        + ", physicalAttackTime="
-        + physicalAttackTime
-        + ", physicalAttackChance="
-        + physicalAttackChance
-        + ", etherDefenseDebuff="
-        + etherDefenseDebuff
-        + ", etherDefenseTime="
-        + etherDefenseTime
-        + ", etherDefenseChance="
-        + etherDefenseChance
-        + ", etherAttackDebuff="
-        + etherAttackDebuff
-        + ", etherAttackTime="
-        + etherAttackTime
-        + ", etherAttackChance="
-        + etherAttackChance
+        + ", physicalDefenseEffect="
+        + physicalDefenseEffect
+        + ", physicalDefenseEffectTime="
+        + physicalDefenseEffectTime
+        + ", physicalDefenseEffectChance="
+        + physicalDefenseEffectChance
+        + ", physicalAttackEffect="
+        + physicalAttackEffect
+        + ", physicalAttackEffectTime="
+        + physicalAttackEffectTime
+        + ", physicalAttackEffectChance="
+        + physicalAttackEffectChance
+        + ", etherDefenseEffect="
+        + etherDefenseEffect
+        + ", etherDefenseEffectTime="
+        + etherDefenseEffectTime
+        + ", etherDefenseEffectChance="
+        + etherDefenseEffectChance
+        + ", potentialEffect="
+        + potentialEffect
+        + ", potentialEffectTime="
+        + potentialEffectTime
+        + ", potentialEffectChance="
+        + potentialEffectChance
         + '}';
   }
 }

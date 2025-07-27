@@ -2,16 +2,14 @@ package com.ambiencetown.zedegridop.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Represents an Ether attack in the Zedegri DOP Engine. Ether attacks are considered a type of
  * {@link Attack}.
  *
  * <p>This class includes logic for dealing with JSON serialization and deserialization using
- * Jackson (<a
- * href="https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.19.0/">
- * Maven</a>). Some fields are treated specially:
+ * Jackson. Some fields are treated specially:
  *
  * <ul>
  *   <li>{@link EtherAttack#getPhysicalDefenseUpJson()}
@@ -34,8 +32,8 @@ public class EtherAttack extends Attack {
   /** The EP cost of the attack. */
   private int ep;
 
-  /** The daze target of the attack. */
-  private String dazeTarget;
+  /** The type of enemy the daze targets. */
+  private Set<EnemyType> dazeTarget;
 
   /** Whether the attack inflicts Purge. */
   private boolean purge;
@@ -62,7 +60,7 @@ public class EtherAttack extends Attack {
   public EtherAttack() {
     user = "";
     ep = 0;
-    dazeTarget = "";
+    dazeTarget = new HashSet<>();
     purge = false;
     type = EtherAttackType.ATTACK;
     physicalDefenseUp = 0;
@@ -104,20 +102,52 @@ public class EtherAttack extends Attack {
     this.ep = ep;
   }
 
-  /** {@return the daze target of the attack.} */
-  @JsonProperty("Daze_Target")
-  public String getDazeTarget() {
+  /** {@return the types of enemy the daze targets.} */
+  @JsonIgnore
+  public Set<EnemyType> getDazeTarget() {
     return dazeTarget;
   }
 
   /**
-   * Sets the daze target of the attack.
+   * A special serializer for compatibility with existing code.
    *
-   * @param dazeTarget the daze target of the attack.
+   * @return A string representation of the set of types of enemy the attack can daze.
+   * @see EtherAttack#getDazeTarget()
    */
   @JsonProperty("Daze_Target")
-  public void setDazeTarget(String dazeTarget) {
+  public String getDazeTargetJson() {
+    if (dazeTarget.isEmpty()) return "";
+
+    StringBuilder output = new StringBuilder();
+    for (EnemyType enemyType : dazeTarget) {
+      output.append(enemyType.toString()).append(" and ");
+    }
+    return output.substring(0, output.length() - 5);
+  }
+
+  /**
+   * Sets the types of enemy the daze targets.
+   *
+   * @param dazeTarget the type of enemy the daze targets.
+   */
+  @JsonIgnore
+  public void setDazeTarget(Set<EnemyType> dazeTarget) {
     this.dazeTarget = dazeTarget;
+  }
+
+  /**
+   * A special deserializer to enable compatibility with existing code.
+   *
+   * @param dazeTarget A string containing the names of all the relevant EnemyTypes. Treated without case-sensitivity.
+   * @see EtherAttack#setDazeTarget(Set)
+   */
+  @JsonProperty("Daze_Target")
+  public void setDazeTargetJson(String dazeTarget) {
+    for (EnemyType enemyType : EnemyType.values()) {
+      if (dazeTarget.toLowerCase().contains(enemyType.toString().toLowerCase())) {
+        this.dazeTarget.add(enemyType);
+      }
+    }
   }
 
   /** {@return whether the attack inflicts Purge.} */

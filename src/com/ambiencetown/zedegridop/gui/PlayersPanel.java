@@ -18,7 +18,10 @@ import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.jetbrains.annotations.*;
 
-/** Panel for editing the details of the Player array. */
+/**
+ * JPanel for editing the details of the Player array.
+ * @author Serenity Montgomery
+ */
 public class PlayersPanel extends JPanel {
   /** The list of players in which to store data. */
   private final List<Player> players;
@@ -197,8 +200,10 @@ public class PlayersPanel extends JPanel {
     formPanel.add(epLabel, GuiFunctions.createConstraints(2, 4));
     formPanel.add(epInput, GuiFunctions.createConstraints(3, 4));
 
+    //      Filler
     formPanel.add(filler, GuiFunctions.createTallConstraints(0, 5, 4, 1));
 
+    //      File Management
     formPanel.add(saveAsButton, GuiFunctions.createConstraints(0, 6, 1, 1));
     formPanel.add(saveFileButton, GuiFunctions.createConstraints(1, 6, 1, 1));
     formPanel.add(loadFileButton, GuiFunctions.createConstraints(2, 6, 1, 1));
@@ -504,7 +509,7 @@ public class PlayersPanel extends JPanel {
   }
 
   private void createHpInput() {
-    hpInput = new JSpinner(GuiFunctions.getNewNumberModel(0));
+    hpInput = new JSpinner(GuiFunctions.getNewNumberModel(Integer.MAX_VALUE));
     hpInput.setOpaque(false);
   }
 
@@ -514,7 +519,7 @@ public class PlayersPanel extends JPanel {
   }
 
   private void createDefenseInput() {
-    defenseInput = new JSpinner(GuiFunctions.getNewNumberModel(0));
+    defenseInput = new JSpinner(GuiFunctions.getNewNumberModel(Integer.MAX_VALUE));
     defenseInput.setOpaque(false);
   }
 
@@ -524,7 +529,7 @@ public class PlayersPanel extends JPanel {
   }
 
   private void createEtherDefenseInput() {
-    etherDefenseInput = new JSpinner(GuiFunctions.getNewNumberModel(0));
+    etherDefenseInput = new JSpinner(GuiFunctions.getNewNumberModel(Integer.MAX_VALUE));
     etherDefenseInput.setOpaque(false);
   }
 
@@ -534,7 +539,7 @@ public class PlayersPanel extends JPanel {
   }
 
   private void createSpeedInput() {
-    speedInput = new JSpinner(GuiFunctions.getNewNumberModel(255));
+    speedInput = new JSpinner(GuiFunctions.getNewNumberModel(255, 255));
     speedInput.setOpaque(false);
   }
 
@@ -544,7 +549,7 @@ public class PlayersPanel extends JPanel {
   }
 
   private void createAttackInput() {
-    attackInput = new JSpinner(GuiFunctions.getNewNumberModel(0));
+    attackInput = new JSpinner(GuiFunctions.getNewNumberModel(Integer.MAX_VALUE));
     attackInput.setOpaque(false);
   }
 
@@ -554,7 +559,7 @@ public class PlayersPanel extends JPanel {
   }
 
   private void createPotentialInput() {
-    potentialInput = new JSpinner(GuiFunctions.getNewNumberModel(0));
+    potentialInput = new JSpinner(GuiFunctions.getNewNumberModel(Integer.MAX_VALUE));
     potentialInput.setOpaque(false);
   }
 
@@ -564,7 +569,7 @@ public class PlayersPanel extends JPanel {
   }
 
   private void createApInput() {
-    apInput = new JSpinner(GuiFunctions.getNewNumberModel(0));
+    apInput = new JSpinner(GuiFunctions.getNewNumberModel(4, 7, 4));
     apInput.setOpaque(false);
   }
 
