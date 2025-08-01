@@ -1,6 +1,8 @@
 package com.ambiencetown.zedegridop.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.jetbrains.annotations.*;
 
 /**
  * Represents a type of {@link EtherAttack}.
@@ -24,7 +26,7 @@ public enum EtherAttackType {
    *     {@code null} if no matching type is found.
    */
   @JsonCreator
-  public static EtherAttackType fromString(String name) {
+  public static @Nullable EtherAttackType fromString(String name) {
     for (EtherAttackType type : EtherAttackType.values()) {
       if (name.equals(type.toString())) {
         return type;
@@ -34,7 +36,8 @@ public enum EtherAttackType {
   }
 
   @Override
-  public String toString() {
+  @JsonValue
+  public @NotNull String toString() {
     return switch (this) {
       case ATTACK -> "Attack";
       case SELF -> "Self";

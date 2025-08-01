@@ -16,11 +16,41 @@ public class Player extends Combatant {
   /** The amount of Ether Points the player has. */
   private int ep;
 
-  /** Constructs a new Player with default values. */
+  /** Constructs a Player with default values. */
   public Player() {
     super();
-    this.ap = 0;
+    this.ap = 4;
     this.ep = 0;
+  }
+
+  /**
+   * Constructs a Player with parameterized values.
+   *
+   * @param name the name of the player combatant.
+   * @param hp the health points of the player combatant.
+   * @param defense the defense of the player combatant.
+   * @param etherDefense the ether defense of the player combatant.
+   * @param speed the speed of the player combatant.
+   * @param attack the attack of the player combatant.
+   * @param potential the potential of the player combatant.
+   * @param ap the amount of Attack Points the player has.
+   * @param ep the amount of Ether Points the player has.
+   */
+  public Player(String name, int hp, int defense, int etherDefense, int speed, int attack, int potential, int ap, int ep) {
+    super(name, hp, defense, etherDefense, speed, attack, potential);
+    setAp(ap);
+    setEp(ep);
+  }
+
+  /**
+   * Constructs a Player with values copied from another Player.
+   *
+   * @param player The player to copy.
+   */
+  public Player(Player player) {
+    super(player);
+    setAp(player.getAp());
+    setEp(player.getEp());
   }
 
   /** {@return the amount of Attack Points the player has.} */

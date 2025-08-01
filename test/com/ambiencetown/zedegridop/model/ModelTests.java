@@ -3,7 +3,7 @@ package com.ambiencetown.zedegridop.model;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-class ZedegriTests {
+class ModelTests {
   @Test
   public void testIntegerPercentageClamping() {
     Attack testAttack = new EnemyAttack();

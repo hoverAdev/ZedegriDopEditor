@@ -1,9 +1,8 @@
 package com.ambiencetown.zedegridop.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.jetbrains.annotations.*;
 
 /**
  * Represents a type of {@link EnemyAttack}.
@@ -51,8 +50,8 @@ public enum EnemyAttackType {
     return null;
   }
 
-  @Contract(pure = true)
   @Override
+  @JsonValue
   public @NotNull String toString() {
     return switch (this) {
       case TEAM_HEAL -> "Team Heal";

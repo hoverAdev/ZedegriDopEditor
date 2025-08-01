@@ -19,12 +19,16 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.jetbrains.annotations.*;
 
 /**
- * JPanel for editing the details of the Player array.
+ * JPanel for editing the details of the Players array.
+ *
  * @author Serenity Montgomery
  */
 public class PlayersPanel extends JPanel {
   /** The list of players in which to store data. */
   private final List<Player> players;
+
+  /** The listModel used to track changes across panels. */
+  private final DefaultListModel<Player> playersListModel;
 
   /** The ObjectMapper used for reading and writing JSON data. */
   private final ObjectMapper mapper;
@@ -76,7 +80,7 @@ public class PlayersPanel extends JPanel {
   private JLabel epLabel;
   private JSpinner epInput;
 
-  private JLabel filler;
+  private JPanel filler;
 
   private JButton saveAsButton;
   private JButton saveFileButton;
@@ -84,13 +88,14 @@ public class PlayersPanel extends JPanel {
   private JButton reloadFileButton;
 
   /**
-   * Creates a new PlayerPanel.
+   * Creates a new PlayersPanel.
    *
    * @param players The list of players to work on and modify.
    * @param mapper The ObjectMapper used for reading and writing JSON data.
    */
-  public PlayersPanel(@NotNull List<Player> players, @NotNull ObjectMapper mapper) {
+  public PlayersPanel(@NotNull List<Player> players, DefaultListModel<Player> playersListModel, @NotNull ObjectMapper mapper) {
     this.players = players;
+    this.playersListModel = playersListModel;
     this.mapper = mapper;
 
     setLayout(new GridBagLayout());
@@ -234,6 +239,7 @@ public class PlayersPanel extends JPanel {
         _ -> {
           players.add(new Player());
           listModel.addElement(players.getLast().getName());
+          playersListModel.addElement(players.getLast());
           playersList.setSelectedIndex(listModel.getSize() - 1);
         });
 
@@ -242,6 +248,7 @@ public class PlayersPanel extends JPanel {
           int index = playersList.getSelectedIndex();
           if (index >= 0 && players.size() > 1) { // Don't allow user to remove the last element
             listModel.remove(index);
+            playersListModel.remove(index);
             players.remove(index);
           }
           if (index < listModel.size()) {
@@ -279,6 +286,7 @@ public class PlayersPanel extends JPanel {
                 if (index >= 0) {
                   String name = nameInput.getText().isEmpty() ? " " : nameInput.getText();
                   players.get(index).setName(name);
+                  playersListModel.get(index).setName(name);
                   listModel.setElementAt(name, index);
                 }
               }
@@ -289,6 +297,7 @@ public class PlayersPanel extends JPanel {
           int index = playersList.getSelectedIndex();
           if (index >= 0) {
             players.get(index).setHp((int) hpInput.getValue());
+            playersListModel.get(index).setHp((int) hpInput.getValue());
           }
         });
 
@@ -297,6 +306,7 @@ public class PlayersPanel extends JPanel {
           int index = playersList.getSelectedIndex();
           if (index >= 0) {
             players.get(index).setDefense((int) defenseInput.getValue());
+            playersListModel.get(index).setDefense((int) defenseInput.getValue());
           }
         });
 
@@ -305,6 +315,7 @@ public class PlayersPanel extends JPanel {
           int index = playersList.getSelectedIndex();
           if (index >= 0) {
             players.get(index).setEtherDefense((int) etherDefenseInput.getValue());
+            playersListModel.get(index).setEtherDefense((int) etherDefenseInput.getValue());
           }
         });
 
@@ -313,6 +324,7 @@ public class PlayersPanel extends JPanel {
           int index = playersList.getSelectedIndex();
           if (index >= 0) {
             players.get(index).setSpeed((int) speedInput.getValue());
+            playersListModel.get(index).setSpeed((int) speedInput.getValue());
           }
         });
 
@@ -321,6 +333,7 @@ public class PlayersPanel extends JPanel {
           int index = playersList.getSelectedIndex();
           if (index >= 0) {
             players.get(index).setAttack(((int) attackInput.getValue()));
+            playersListModel.get(index).setAttack(((int) attackInput.getValue()));
           }
         });
 
@@ -329,6 +342,7 @@ public class PlayersPanel extends JPanel {
           int index = playersList.getSelectedIndex();
           if (index >= 0) {
             players.get(index).setPotential((int) potentialInput.getValue());
+            playersListModel.get(index).setPotential((int) potentialInput.getValue());
           }
         });
 
@@ -337,6 +351,7 @@ public class PlayersPanel extends JPanel {
           int index = playersList.getSelectedIndex();
           if (index >= 0) {
             players.get(index).setAp(((int) apInput.getValue()));
+            playersListModel.get(index).setAp(((int) apInput.getValue()));
           }
         });
 
@@ -345,6 +360,7 @@ public class PlayersPanel extends JPanel {
           int index = playersList.getSelectedIndex();
           if (index >= 0) {
             players.get(index).setEp(((int) epInput.getValue()));
+            playersListModel.get(index).setEp(((int) epInput.getValue()));
           }
         });
 
@@ -377,9 +393,7 @@ public class PlayersPanel extends JPanel {
     reloadFileButton.addActionListener(_ -> loadFile());
   }
 
-  /**
-   * Saves the current list of players to the file indicated by the savedFile field.
-   */
+  /** Saves the current list of players to the file indicated by the savedFile field. */
   private void saveFile() {
     try {
       mapper.writeValue(savedFile, players);
@@ -390,9 +404,7 @@ public class PlayersPanel extends JPanel {
     }
   }
 
-  /**
-   * Loaded a new list of players from the file indicated by the loadedFile field.
-   */
+  /** Loaded a new list of players from the file indicated by the loadedFile field. */
   private void loadFile() {
     try {
       // Get the input list of players
@@ -430,11 +442,10 @@ public class PlayersPanel extends JPanel {
         reloadFileButton.setEnabled(true);
         reloadFileButton.setText(("Load " + loadedFile.getName()));
 
-
       } else GuiFunctions.printSwingError("File " + loadedFile.getName() + " is empty!", this);
     } catch (DatabindException | StreamReadException e) {
       GuiFunctions.printSwingError(
-              "File " + loadedFile.getName() + " is not a Players JSON!", this);
+          "File " + loadedFile.getName() + " is not a Players JSON!", this);
     } catch (IOException e) {
       GuiFunctions.printSwingError("Could not read from file " + loadedFile.getName() + "!", this);
     }
@@ -494,8 +505,7 @@ public class PlayersPanel extends JPanel {
   }
 
   private void createNameLabel() {
-    nameLabel = new JLabel("Name:");
-    nameLabel.setHorizontalAlignment(JLabel.RIGHT);
+    nameLabel = GuiFunctions.getRightAlignedLabel("Name:");
   }
 
   private void createNameInput() {
@@ -504,8 +514,7 @@ public class PlayersPanel extends JPanel {
   }
 
   private void createHpLabel() {
-    hpLabel = new JLabel("HP:");
-    hpLabel.setHorizontalAlignment(JLabel.RIGHT);
+    hpLabel = GuiFunctions.getRightAlignedLabel("HP:");
   }
 
   private void createHpInput() {
@@ -514,8 +523,7 @@ public class PlayersPanel extends JPanel {
   }
 
   private void createDefenseLabel() {
-    defenseLabel = new JLabel("Defense:");
-    defenseLabel.setHorizontalAlignment(JLabel.RIGHT);
+    defenseLabel = GuiFunctions.getRightAlignedLabel("Defense:");
   }
 
   private void createDefenseInput() {
@@ -524,8 +532,7 @@ public class PlayersPanel extends JPanel {
   }
 
   private void createEtherDefenseLabel() {
-    etherDefenseLabel = new JLabel("Ether Defense:");
-    etherDefenseLabel.setHorizontalAlignment(JLabel.RIGHT);
+    etherDefenseLabel = GuiFunctions.getRightAlignedLabel("Ether Defense:");
   }
 
   private void createEtherDefenseInput() {
@@ -534,8 +541,7 @@ public class PlayersPanel extends JPanel {
   }
 
   private void createSpeedLabel() {
-    speedLabel = new JLabel("Speed:");
-    speedLabel.setHorizontalAlignment(JLabel.RIGHT);
+    speedLabel = GuiFunctions.getRightAlignedLabel("Speed:");
   }
 
   private void createSpeedInput() {
@@ -544,8 +550,7 @@ public class PlayersPanel extends JPanel {
   }
 
   private void createAttackLabel() {
-    attackLabel = new JLabel("Attack:");
-    attackLabel.setHorizontalAlignment(JLabel.RIGHT);
+    attackLabel = GuiFunctions.getRightAlignedLabel("Attack:");
   }
 
   private void createAttackInput() {
@@ -554,8 +559,7 @@ public class PlayersPanel extends JPanel {
   }
 
   private void createPotentialLabel() {
-    potentialLabel = new JLabel("Potential:");
-    potentialLabel.setHorizontalAlignment(JLabel.RIGHT);
+    potentialLabel = GuiFunctions.getRightAlignedLabel("Potential:");
   }
 
   private void createPotentialInput() {
@@ -564,8 +568,7 @@ public class PlayersPanel extends JPanel {
   }
 
   private void createApLabel() {
-    apLabel = new JLabel("AP:");
-    apLabel.setHorizontalAlignment(JLabel.RIGHT);
+    apLabel = GuiFunctions.getRightAlignedLabel("AP:");
   }
 
   private void createApInput() {
@@ -574,8 +577,7 @@ public class PlayersPanel extends JPanel {
   }
 
   private void createEpLabel() {
-    epLabel = new JLabel("EP:");
-    epLabel.setHorizontalAlignment(JLabel.RIGHT);
+    epLabel = GuiFunctions.getRightAlignedLabel("EP:");
   }
 
   private void createEpInput() {
@@ -584,23 +586,15 @@ public class PlayersPanel extends JPanel {
   }
 
   private void createFiller() {
+    filler = new JPanel(new BorderLayout());
+
     URL iconSrc = this.getClass().getResource("res/players.png");
     if (iconSrc != null) {
-      filler = new JLabel(new ImageIcon(iconSrc));
-    } else {
-      filler = new JLabel("Filler");
+      JLabel icon = new JLabel(new ImageIcon(iconSrc));
+      icon.setHorizontalAlignment(JLabel.CENTER);
+      icon.setVerticalAlignment(JLabel.CENTER);
+      filler.add(icon, BorderLayout.CENTER);
     }
-    filler.setHorizontalAlignment(JLabel.CENTER);
-    filler.setVerticalAlignment(JLabel.CENTER);
-  }
-
-  private void createLoadFileButton() {
-    loadFileButton = new JButton("Load file...");
-  }
-
-  private void createReloadFileButton() {
-    reloadFileButton = new JButton("Load file");
-    reloadFileButton.setEnabled(false);
   }
 
   private void createSaveAsButton() {
@@ -610,5 +604,14 @@ public class PlayersPanel extends JPanel {
   private void createSaveFileButton() {
     saveFileButton = new JButton("Save file");
     saveFileButton.setEnabled(false);
+  }
+
+  private void createLoadFileButton() {
+    loadFileButton = new JButton("Load file...");
+  }
+
+  private void createReloadFileButton() {
+    reloadFileButton = new JButton("Load file");
+    reloadFileButton.setEnabled(false);
   }
 }

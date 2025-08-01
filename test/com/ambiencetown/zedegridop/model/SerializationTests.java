@@ -3,7 +3,9 @@ package com.ambiencetown.zedegridop.model;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
@@ -25,6 +27,7 @@ public class SerializationTests {
   public static void setup() {
     mapper = new ObjectMapper();
     mapper.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
+    mapper.enable(SerializationFeature.INDENT_OUTPUT);
   }
 
   /** Ensures correct behavior on serializing an empty set. */
@@ -58,15 +61,34 @@ public class SerializationTests {
       return;
     }
 
-    assertEquals("Jacob", actual.getName(), fieldShouldMatchError("name"));
-    assertEquals(250, actual.getHp(), fieldShouldMatchError("hp"));
-    assertEquals(0, actual.getDefense(), fieldShouldMatchError("defense"));
-    assertEquals(0, actual.getEtherDefense(), fieldShouldMatchError("ether defense"));
-    assertEquals(50, actual.getSpeed(), fieldShouldMatchError("speed"));
-    assertEquals(80, actual.getAttack(), fieldShouldMatchError("attack"));
-    assertEquals(50, actual.getPotential(), fieldShouldMatchError("potential"));
-    assertEquals(7, actual.getAp(), fieldShouldMatchError("ap"));
-    assertEquals(7, actual.getEp(), fieldShouldMatchError("ep"));
+    assertAll(
+        () -> assertEquals("Jacob", actual.getName(), fieldShouldMatchError("name")),
+        () -> assertEquals(250, actual.getHp(), fieldShouldMatchError("hp")),
+        () -> assertEquals(0, actual.getDefense(), fieldShouldMatchError("defense")),
+        () -> assertEquals(0, actual.getEtherDefense(), fieldShouldMatchError("ether defense")),
+        () -> assertEquals(50, actual.getSpeed(), fieldShouldMatchError("speed")),
+        () -> assertEquals(80, actual.getAttack(), fieldShouldMatchError("attack")),
+        () -> assertEquals(50, actual.getPotential(), fieldShouldMatchError("potential")),
+        () -> assertEquals(7, actual.getAp(), fieldShouldMatchError("ap")),
+        () -> assertEquals(7, actual.getEp(), fieldShouldMatchError("ep")));
+  }
+
+  /**
+   * Validates the deserializer and serializer using a round-trip conversion between Java object and
+   * JSON for the Player model.
+   */
+  @Test
+  public void testPlayerJsonRoundTrip() {
+    Player expected = new Player("Jacob", 250, 0, 0, 50, 80, 50, 7, 7);
+
+    try {
+      String json = mapper.writeValueAsString(expected);
+      Player actual = mapper.readValue(json, Player.class);
+
+      assertEquals(expected, actual);
+    } catch (JsonProcessingException e) {
+      fail(e.getMessage());
+    }
   }
 
   /** Validates the deserializer against a set of known values for the Ether Attack model. */
@@ -87,80 +109,151 @@ public class SerializationTests {
       return;
     }
 
-    assertEquals("Jacob", actual.getUser(), fieldShouldMatchError("user"));
-    assertEquals("Power Driver", actual.getTitle(), fieldShouldMatchError("title"));
-    assertEquals(
-        "A strong hit charged with mystical force",
-        actual.getDescription(),
-        fieldShouldMatchError("description"));
-    assertEquals(1, actual.getEp(), fieldShouldMatchError("ep"));
-    assertEquals(1, actual.getHits(), fieldShouldMatchError("hits"));
-    assertFalse(actual.isAoe(), fieldShouldMatchError("aoe"));
-    assertEquals(90, actual.getAccuracy(), fieldShouldMatchError("accuracy"));
-    assertEquals(2.5, actual.getMultiplier(), fieldShouldMatchError("multiplier"));
-    assertEquals(
-        new HashSet<EnemyType>(), actual.getDazeTarget(), fieldShouldMatchError("daze target"));
-    assertEquals(0, actual.getDazeChance(), fieldShouldMatchError("daze chance"));
-    assertFalse(actual.isHeal(), fieldShouldMatchError("heal"));
-    assertFalse(actual.isPurge(), fieldShouldMatchError("purge"));
-    assertFalse(actual.isLeech(), fieldShouldMatchError("leech"));
-    assertEquals(EtherAttackType.ATTACK, actual.getType(), fieldShouldMatchError("type"));
-    assertEquals(0, actual.getBurnTime(), fieldShouldMatchError("burn time"));
-    assertEquals(0, actual.getPoisonTime(), fieldShouldMatchError("poison time"));
+    assertAll(
+        () -> assertEquals("Jacob", actual.getUser(), fieldShouldMatchError("user")),
+        () -> assertEquals("Power Driver", actual.getTitle(), fieldShouldMatchError("title")),
+        () ->
+            assertEquals(
+                "A strong hit charged with mystical force",
+                actual.getDescription(),
+                fieldShouldMatchError("description")),
+        () -> assertEquals(1, actual.getEp(), fieldShouldMatchError("ep")),
+        () -> assertEquals(1, actual.getHits(), fieldShouldMatchError("hits")),
+        () -> assertFalse(actual.isAoe(), fieldShouldMatchError("aoe")),
+        () -> assertEquals(90, actual.getAccuracy(), fieldShouldMatchError("accuracy")),
+        () -> assertEquals(2.5, actual.getMultiplier(), fieldShouldMatchError("multiplier")),
+        () ->
+            assertEquals(
+                new HashSet<EnemyType>(),
+                actual.getDazeTarget(),
+                fieldShouldMatchError("daze target")),
+        () -> assertEquals(0, actual.getDazeChance(), fieldShouldMatchError("daze chance")),
+        () -> assertFalse(actual.isHeal(), fieldShouldMatchError("heal")),
+        () -> assertFalse(actual.isPurge(), fieldShouldMatchError("purge")),
+        () -> assertFalse(actual.isLeech(), fieldShouldMatchError("leech")),
+        () -> assertEquals(EtherAttackType.ATTACK, actual.getType(), fieldShouldMatchError("type")),
+        () -> assertEquals(0, actual.getBurnTime(), fieldShouldMatchError("burn time")),
+        () -> assertEquals(0, actual.getPoisonTime(), fieldShouldMatchError("poison time")),
+        () ->
+            assertEquals(
+                EffectMultiplier.TIMES_05,
+                actual.getPhysicalDefenseEffect(),
+                fieldShouldMatchError("physical defense effect")),
+        () ->
+            assertEquals(
+                0,
+                actual.getPhysicalDefenseEffectTime(),
+                fieldShouldMatchError("physical defense effect time")),
+        () ->
+            assertEquals(
+                0,
+                actual.getPhysicalDefenseEffectChance(),
+                fieldShouldMatchError("physical defense effect chance")),
+        () ->
+            assertEquals(
+                EffectMultiplier.TIMES_05,
+                actual.getPhysicalAttackEffect(),
+                fieldShouldMatchError("physical attack effect")),
+        () ->
+            assertEquals(
+                2,
+                actual.getPhysicalAttackEffectTime(),
+                fieldShouldMatchError("physical attack effect time")),
+        () ->
+            assertEquals(
+                10,
+                actual.getPhysicalAttackEffectChance(),
+                fieldShouldMatchError("physical attack effect chance")),
+        () ->
+            assertEquals(
+                EffectMultiplier.TIMES_05,
+                actual.getEtherDefenseEffect(),
+                fieldShouldMatchError("ether defense effect")),
+        () ->
+            assertEquals(
+                0,
+                actual.getEtherDefenseEffectTime(),
+                fieldShouldMatchError("ether defense effect time")),
+        () ->
+            assertEquals(
+                0,
+                actual.getEtherDefenseEffectChance(),
+                fieldShouldMatchError("ether defense effect chance")),
+        () ->
+            assertEquals(
+                EffectMultiplier.TIMES_05,
+                actual.getPotentialEffect(),
+                fieldShouldMatchError("potential effect")),
+        () ->
+            assertEquals(
+                0, actual.getPotentialEffectTime(), fieldShouldMatchError("potential effect time")),
+        () ->
+            assertEquals(
+                0,
+                actual.getPotentialEffectChance(),
+                fieldShouldMatchError("potential effect chance")),
+        () ->
+            assertEquals(
+                0, actual.getPhysicalDefenseUp(), fieldShouldMatchError("physical defense up")),
+        () ->
+            assertEquals(
+                0, actual.getPhysicalAttackUp(), fieldShouldMatchError("physical attack up")),
+        () ->
+            assertEquals(0, actual.getEtherDefenseUp(), fieldShouldMatchError("ether defense up")),
+        () -> assertEquals(0, actual.getPotentialUp(), fieldShouldMatchError("potential up")),
+        () -> assertEquals(0, actual.getSpeedUp(), fieldShouldMatchError("speed up")));
+  }
 
-    assertEquals(
-        EffectMultiplier.TIMES_05,
-        actual.getPhysicalDefenseEffect(),
-        fieldShouldMatchError("physical defense effect"));
-    assertEquals(
-        0,
-        actual.getPhysicalDefenseEffectTime(),
-        fieldShouldMatchError("physical defense effect time"));
-    assertEquals(
-        0,
-        actual.getPhysicalDefenseEffectChance(),
-        fieldShouldMatchError("physical defense effect chance"));
+  /**
+   * Validates the deserializer and serializer using a round-trip conversion between Java object and
+   * JSON for the Ether Attack model.
+   */
+  @Test
+  public void testEtherJsonRoundTrip() {
+    EtherAttack expected =
+        new EtherAttack(
+            "Jacob",
+            "Power Driver",
+            "A strong hit charged with mystical force",
+            1,
+            1,
+            false,
+            90,
+            2.5,
+            new HashSet<>(),
+            0,
+            false,
+            false,
+            false,
+            EtherAttackType.ATTACK,
+            0,
+            0,
+            EffectMultiplier.TIMES_05,
+            0,
+            0,
+            EffectMultiplier.TIMES_05,
+            2,
+            10,
+            EffectMultiplier.TIMES_05,
+            0,
+            0,
+            EffectMultiplier.TIMES_05,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0);
 
-    assertEquals(
-        EffectMultiplier.TIMES_05,
-        actual.getPhysicalAttackEffect(),
-        fieldShouldMatchError("physical attack effect"));
-    assertEquals(
-        2,
-        actual.getPhysicalAttackEffectTime(),
-        fieldShouldMatchError("physical attack effect time"));
-    assertEquals(
-        10,
-        actual.getPhysicalAttackEffectChance(),
-        fieldShouldMatchError("physical attack effect chance"));
+    try {
+      String json = mapper.writeValueAsString(expected);
+      EtherAttack actual = mapper.readValue(json, EtherAttack.class);
 
-    assertEquals(
-        EffectMultiplier.TIMES_05,
-        actual.getEtherDefenseEffect(),
-        fieldShouldMatchError("ether defense effect"));
-    assertEquals(
-        0, actual.getEtherDefenseEffectTime(), fieldShouldMatchError("ether defense effect time"));
-    assertEquals(
-        0,
-        actual.getEtherDefenseEffectChance(),
-        fieldShouldMatchError("ether defense effect chance"));
-
-    assertEquals(
-        EffectMultiplier.TIMES_05,
-        actual.getPotentialEffect(),
-        fieldShouldMatchError("potential effect"));
-    assertEquals(
-        0, actual.getPotentialEffectTime(), fieldShouldMatchError("potential effect time"));
-    assertEquals(
-        0, actual.getPotentialEffectChance(), fieldShouldMatchError("potential effect chance"));
-
-    assertEquals(0, actual.getPhysicalDefenseUp(), fieldShouldMatchError("physical defense up"));
-    assertEquals(0, actual.getPhysicalAttackUp(), fieldShouldMatchError("physical attack up"));
-
-    assertEquals(0, actual.getEtherDefenseUp(), fieldShouldMatchError("ether defense up"));
-    assertEquals(0, actual.getEtherAttackUp(), fieldShouldMatchError("ether attack up"));
-
-    assertEquals(0, actual.getSpeedUp(), fieldShouldMatchError("speed up"));
+      assertEquals(expected, actual);
+    } catch (JsonProcessingException e) {
+      fail(e.getMessage());
+    }
   }
 
   /** Validates the deserializer against a set of known values for the Enemy model. */
@@ -181,16 +274,38 @@ public class SerializationTests {
       return;
     }
 
-    assertEquals("No Enemy", actual.getName(), fieldShouldMatchError("name"));
-    assertEquals(EnemyType.ANIMAL, actual.getType(), fieldShouldMatchError("type"));
-    assertEquals(0, actual.getHp(), fieldShouldMatchError("hp"));
-    assertEquals(0, actual.getDefense(), fieldShouldMatchError("defense"));
-    assertEquals(0, actual.getEtherDefense(), fieldShouldMatchError("ether defense"));
-    assertEquals(255, actual.getSpeed(), fieldShouldMatchError("speed"));
-    assertEquals(0, actual.getAttack(), fieldShouldMatchError("attack"));
-    assertEquals(0, actual.getPotential(), fieldShouldMatchError("potential"));
-    assertEquals(
-        new ArrayList<>(List.of(0)), actual.getAttacks(), fieldShouldMatchError("attacks"));
+    assertAll(
+        () -> assertEquals("No Enemy", actual.getName(), fieldShouldMatchError("name")),
+        () -> assertEquals(EnemyType.ANIMAL, actual.getType(), fieldShouldMatchError("type")),
+        () -> assertEquals(0, actual.getHp(), fieldShouldMatchError("hp")),
+        () -> assertEquals(0, actual.getDefense(), fieldShouldMatchError("defense")),
+        () -> assertEquals(0, actual.getEtherDefense(), fieldShouldMatchError("ether defense")),
+        () -> assertEquals(255, actual.getSpeed(), fieldShouldMatchError("speed")),
+        () -> assertEquals(0, actual.getAttack(), fieldShouldMatchError("attack")),
+        () -> assertEquals(0, actual.getPotential(), fieldShouldMatchError("potential")),
+        () ->
+            assertEquals(
+                new HashSet<>(List.of(0)),
+                actual.getAttacks(),
+                fieldShouldMatchError("attacks")));
+  }
+
+  /**
+   * Validates the deserializer and serializer using a round-trip conversion between Java object and
+   * JSON for the Enemy model.
+   */
+  @Test
+  public void testEnemyJsonRoundTrip() {
+    Enemy expected =
+        new Enemy("No Enemy", EnemyType.ANIMAL, 0, 0, 0, 255, 0, 0, new HashSet<>(List.of(0)));
+
+    try {
+      String json = mapper.writeValueAsString(expected);
+      Enemy actual = mapper.readValue(json, Enemy.class);
+      assertEquals(expected, actual);
+    } catch (JsonProcessingException e) {
+      fail(e.getMessage());
+    }
   }
 
   /** Validates the deserializer against a set of known values for the Enemy Attack model. */
@@ -211,70 +326,135 @@ public class SerializationTests {
       return;
     }
 
-    assertEquals(1, actual.getNumber(), fieldShouldMatchError("number"));
-    assertEquals("Bite", actual.getTitle(), fieldShouldMatchError("title"));
-    assertEquals(
-        "A single regular bite", actual.getDescription(), fieldShouldMatchError("description"));
-    assertEquals(1, actual.getHits(), fieldShouldMatchError("hits"));
-    assertFalse(actual.isAoe(), fieldShouldMatchError("aoe"));
-    assertEquals(70, actual.getAccuracy(), fieldShouldMatchError("accuracy"));
-    assertEquals(1, actual.getMultiplier(), fieldShouldMatchError("multiplier"));
-    assertEquals(80, actual.getDazeChance(), fieldShouldMatchError("daze chance"));
-    assertFalse(actual.isHeal(), fieldShouldMatchError("heal"));
-    assertFalse(actual.isLeech(), fieldShouldMatchError("leech"));
-    assertEquals(EnemyAttackType.PHYSICAL_ATTACK, actual.getType(), fieldShouldMatchError("type"));
-    assertEquals("Enemy", actual.getTarget(), fieldShouldMatchError("target"));
-    assertFalse(actual.isUsePotential(), fieldShouldMatchError("use potential"));
-    assertEquals(0, actual.getFlicker(), fieldShouldMatchError("flicker"));
-    assertEquals(20, actual.getPoints(), fieldShouldMatchError("points"));
-    assertEquals(0, actual.getBurnTime(), fieldShouldMatchError("burn time"));
-    assertEquals(0, actual.getPoisonTime(), fieldShouldMatchError("poison time"));
+    assertAll(
+        () -> assertEquals(1, actual.getNumber(), fieldShouldMatchError("number")),
+        () -> assertEquals("Bite", actual.getTitle(), fieldShouldMatchError("title")),
+        () ->
+            assertEquals(
+                "A single regular bite",
+                actual.getDescription(),
+                fieldShouldMatchError("description")),
+        () -> assertEquals(1, actual.getHits(), fieldShouldMatchError("hits")),
+        () -> assertFalse(actual.isAoe(), fieldShouldMatchError("aoe")),
+        () -> assertEquals(70, actual.getAccuracy(), fieldShouldMatchError("accuracy")),
+        () -> assertEquals(1, actual.getMultiplier(), fieldShouldMatchError("multiplier")),
+        () -> assertEquals(80, actual.getDazeChance(), fieldShouldMatchError("daze chance")),
+        () -> assertFalse(actual.isHeal(), fieldShouldMatchError("heal")),
+        () -> assertFalse(actual.isLeech(), fieldShouldMatchError("leech")),
+        () ->
+            assertEquals(
+                EnemyAttackType.PHYSICAL_ATTACK, actual.getType(), fieldShouldMatchError("type")),
+        () -> assertEquals("Enemy", actual.getTarget(), fieldShouldMatchError("target")),
+        () -> assertFalse(actual.isUsePotential(), fieldShouldMatchError("use potential")),
+        () -> assertEquals(0, actual.getFlicker(), fieldShouldMatchError("flicker")),
+        () -> assertEquals(20, actual.getPoints(), fieldShouldMatchError("points")),
+        () -> assertEquals(0, actual.getBurnTime(), fieldShouldMatchError("burn time")),
+        () -> assertEquals(0, actual.getPoisonTime(), fieldShouldMatchError("poison time")),
+        () ->
+            assertEquals(
+                EffectMultiplier.TIMES_05,
+                actual.getPhysicalDefenseEffect(),
+                fieldShouldMatchError("physical defense effect")),
+        () ->
+            assertEquals(
+                0,
+                actual.getPhysicalDefenseEffectTime(),
+                fieldShouldMatchError("physical defense effect time")),
+        () ->
+            assertEquals(
+                0,
+                actual.getPhysicalDefenseEffectChance(),
+                fieldShouldMatchError("physical defense effect chance")),
+        () ->
+            assertEquals(
+                EffectMultiplier.TIMES_05,
+                actual.getPhysicalAttackEffect(),
+                fieldShouldMatchError("physical attack effect")),
+        () ->
+            assertEquals(
+                0,
+                actual.getPhysicalAttackEffectTime(),
+                fieldShouldMatchError("physical attack effect time")),
+        () ->
+            assertEquals(
+                0,
+                actual.getPhysicalAttackEffectChance(),
+                fieldShouldMatchError("physical attack effect chance")),
+        () ->
+            assertEquals(
+                EffectMultiplier.TIMES_05,
+                actual.getEtherDefenseEffect(),
+                fieldShouldMatchError("ether defense effect")),
+        () ->
+            assertEquals(
+                0,
+                actual.getEtherDefenseEffectTime(),
+                fieldShouldMatchError("ether defense effect time")),
+        () ->
+            assertEquals(
+                0,
+                actual.getEtherDefenseEffectChance(),
+                fieldShouldMatchError("ether defense effect chance")),
+        () ->
+            assertEquals(
+                EffectMultiplier.TIMES_05,
+                actual.getPotentialEffect(),
+                fieldShouldMatchError("potential effect")),
+        () ->
+            assertEquals(
+                0, actual.getPotentialEffectTime(), fieldShouldMatchError("potential effect time")),
+        () ->
+            assertEquals(
+                0,
+                actual.getPotentialEffectChance(),
+                fieldShouldMatchError("potential effect chance")));
+  }
 
-    assertEquals(
-        EffectMultiplier.TIMES_05,
-        actual.getPhysicalDefenseEffect(),
-        fieldShouldMatchError("physical defense effect"));
-    assertEquals(
-        0,
-        actual.getPhysicalDefenseEffectTime(),
-        fieldShouldMatchError("physical defense effect time"));
-    assertEquals(
-        0,
-        actual.getPhysicalDefenseEffectChance(),
-        fieldShouldMatchError("physical defense effect chance"));
+  /**
+   * Validates the deserializer and serializer using a round-trip conversion between Java object and
+   * JSON for the Enemy Attack model.
+   */
+  @Test
+  public void testEnemyAttackJsonRoundTrip() {
+    EnemyAttack expected =
+        new EnemyAttack(
+            1,
+            "Bite",
+            "A single regular bite",
+            1,
+            false,
+            70,
+            1,
+            80,
+            false,
+            false,
+            EnemyAttackType.PHYSICAL_ATTACK,
+            "Enemy",
+            false,
+            0,
+            20,
+            0,
+            0,
+            EffectMultiplier.TIMES_05,
+            0,
+            0,
+            EffectMultiplier.TIMES_05,
+            0,
+            0,
+            EffectMultiplier.TIMES_05,
+            0,
+            0,
+            EffectMultiplier.TIMES_05,
+            0,
+            0);
 
-    assertEquals(
-        EffectMultiplier.TIMES_05,
-        actual.getPhysicalAttackEffect(),
-        fieldShouldMatchError("physical attack effect"));
-    assertEquals(
-        0,
-        actual.getPhysicalAttackEffectTime(),
-        fieldShouldMatchError("physical attack effect time"));
-    assertEquals(
-        0,
-        actual.getPhysicalAttackEffectChance(),
-        fieldShouldMatchError("physical attack effect chance"));
-
-    assertEquals(
-        EffectMultiplier.TIMES_05,
-        actual.getEtherDefenseEffect(),
-        fieldShouldMatchError("ether defense effect"));
-    assertEquals(
-        0, actual.getEtherDefenseEffectTime(), fieldShouldMatchError("ether defense effect time"));
-    assertEquals(
-        0,
-        actual.getEtherDefenseEffectChance(),
-        fieldShouldMatchError("ether defense effect chance"));
-
-    assertEquals(
-        EffectMultiplier.TIMES_05,
-        actual.getPotentialEffect(),
-        fieldShouldMatchError("potential effect"));
-    assertEquals(
-        0, actual.getPotentialEffectTime(), fieldShouldMatchError("potential effect time"));
-    assertEquals(
-        0, actual.getPotentialEffectChance(), fieldShouldMatchError("potential effect chance"));
+    try {
+      String json = mapper.writeValueAsString(expected);
+      EnemyAttack actual = mapper.readValue(json, EnemyAttack.class);
+      assertEquals(expected, actual);
+    } catch (JsonProcessingException e) {
+      fail(e.getMessage());
+    }
   }
 
   /**

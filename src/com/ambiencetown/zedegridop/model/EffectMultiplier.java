@@ -1,5 +1,9 @@
 package com.ambiencetown.zedegridop.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.jetbrains.annotations.*;
+
 /** A stat multiplier for a buff or debuff in the Zedegri DOP Engine. */
 public enum EffectMultiplier {
   /** The effect debuffs a stat by 0.5×. */
@@ -25,7 +29,8 @@ public enum EffectMultiplier {
    *     input.
    * @return The corresponding multiplier, or {@code null} if the input was invalid.
    */
-  public static EffectMultiplier fromInt(int input) {
+  @JsonCreator
+  public static @Nullable EffectMultiplier fromInt(int input) {
     return switch (input) {
       case 0 -> TIMES_05;
       case 1 -> TIMES_15;
@@ -35,7 +40,8 @@ public enum EffectMultiplier {
   }
 
   @Override
-  public String toString() {
+  @JsonValue
+  public @NotNull String toString() {
     return switch (this) {
       case TIMES_05 -> "0.5x";
       case TIMES_15 -> "1.5x";

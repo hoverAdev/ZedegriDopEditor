@@ -28,7 +28,7 @@ public class EnemyAttacksPanel extends JPanel {
 
     private JPanel formPanel;
 
-    private JLabel filler;
+    private JPanel filler;
 
     public EnemyAttacksPanel(@NotNull List<EnemyAttack> enemyAttacks, @NotNull ObjectMapper mapper) {
         this.enemyAttacks = enemyAttacks;
@@ -112,15 +112,15 @@ public class EnemyAttacksPanel extends JPanel {
      * Creates an image icon to fill the empty space.
      */
     private void createFiller() {
+        filler = new JPanel(new BorderLayout());
+
         URL iconSrc = this.getClass().getResource("res/attacks.png");
         if (iconSrc != null) {
-            filler = new JLabel(new ImageIcon(iconSrc));
+            JLabel icon = new JLabel(new ImageIcon(iconSrc));
+            icon.setHorizontalAlignment(JLabel.CENTER);
+            icon.setVerticalAlignment(JLabel.CENTER);
+            filler.add(icon, BorderLayout.CENTER);
         }
-        else {
-            filler = new JLabel("Filler");
-        }
-        filler.setHorizontalAlignment(JLabel.CENTER);
-        filler.setVerticalAlignment(JLabel.CENTER);
     }
 
 }

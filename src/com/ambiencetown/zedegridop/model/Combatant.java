@@ -30,10 +30,10 @@ public abstract class Combatant {
   /** The attack of the combatant. */
   private int attack;
 
-  /** The potential of the combatant. */
+  /** The potential (ether attack) of the combatant. */
   private int potential;
 
-  /** Constructs a Combatant with the default values. */
+  /** Constructs a new Combatant with the default values. */
   protected Combatant() {
     this.name = "None";
     this.hp = 0;
@@ -42,6 +42,44 @@ public abstract class Combatant {
     this.speed = 255;
     this.attack = 0;
     this.potential = 0;
+  }
+
+  /**
+   * Constructs a new Combatant with parameterized values.
+   *
+   * @param name the name of the combatant.
+   * @param hp the health points of the combatant.
+   * @param defense the defense of the combatant.
+   * @param etherDefense the ether defense of the combatant.
+   * @param speed the speed of the combatant.
+   * @param attack the attack of the combatant.
+   * @param potential the potential of the combatant.
+   */
+  protected Combatant(
+      String name, int hp, int defense, int etherDefense, int speed, int attack, int potential) {
+    // Use setters for input validation
+    setName(name);
+    setHp(hp);
+    setDefense(defense);
+    setEtherDefense(etherDefense);
+    setSpeed(speed);
+    setAttack(attack);
+    setPotential(potential);
+  }
+
+  /**
+   * Constructs a new Combatant with values copied from another Combatant.
+   *
+   * @param combatant The combatant to copy.
+   */
+  protected Combatant(Combatant combatant) {
+    setName(combatant.getName());
+    setHp(combatant.getHp());
+    setDefense(combatant.getDefense());
+    setEtherDefense(combatant.getEtherDefense());
+    setSpeed(combatant.getSpeed());
+    setAttack(combatant.getAttack());
+    setPotential(combatant.getPotential());
   }
 
   /** {@return the name of the combatant.} */

@@ -50,6 +50,14 @@ public class GuiFunctions {
   }
 
   /**
+   *
+   */
+  public static @NotNull JLabel getRightAlignedLabel(String text) {
+    JLabel label = new JLabel(text);
+    label.setHorizontalAlignment(JLabel.RIGHT);
+    return label;
+  }
+  /**
    * Creates a new GridBagConstraints that is greedy about height.
    *
    * @param gridX The x position of the object.

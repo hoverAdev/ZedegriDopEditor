@@ -10,8 +10,8 @@ import org.jetbrains.annotations.NotNull;
  * attacks may also inflict healing and buffs to teammates.
  *
  * <p>This class includes logic for dealing with JSON serialization and deserialization using
- * Jackson. The {@code heal} field is treated specially: it is serialized as {@code 0} or {@code
- * 1}, corresponding to {@code false} and {@code true} respectively.
+ * Jackson. The {@code heal} field is treated specially: it is serialized as {@code 0} or {@code 1},
+ * corresponding to {@code false} and {@code true} respectively.
  *
  * @author Fiora Satou
  * @author Serenity Montgomery
@@ -86,7 +86,7 @@ public abstract class Attack {
   /** The chance to inflict the potential buff or debuff as an integer percentage. */
   private int potentialEffectChance;
 
-  /** Constructs an Attack with the default values. */
+  /** Constructs a new Attack with the default values. */
   protected Attack() {
     this.title = "None";
     this.description = "";
@@ -111,6 +111,118 @@ public abstract class Attack {
     this.potentialEffect = EffectMultiplier.TIMES_05;
     this.potentialEffectTime = 0;
     this.potentialEffectChance = 0;
+  }
+
+  /**
+   * Constructs a new Attack with parameterized values.
+   *
+   * @param title the title of the attack.
+   * @param description the description of the attack.
+   * @param hits the number of hits the attack deals.
+   * @param aoe whether the attack hits multiple enemies.
+   * @param accuracy the accuracy of the attack as an integer percentage.
+   * @param multiplier modifies the attack damage by a float multiplier.
+   * @param dazeChance the chance that the attack will inflict Daze as an integer percentage.
+   * @param heal whether the attack is a healing attack.
+   * @param leech whether the attack leeches health from enemies.
+   * @param burnTime the number of turns to inflict Burn.
+   * @param poisonTime the number of turns to inflict Poison.
+   * @param physicalDefenseEffect the physical defense buff or debuff applied by the attack.
+   * @param physicalDefenseEffectTime the number of turns the physical defense buff or debuff lasts.
+   * @param physicalDefenseEffectChance the chance to inflict the physical defense buff or debuff as
+   *     an integer percentage.
+   * @param physicalAttackEffect the physical attack buff or debuff applied by the attack.
+   * @param physicalAttackEffectTime the number of turns the physical attack buff or debuff lasts.
+   * @param physicalAttackEffectChance the chance to inflict the physical attack buff or debuff as
+   *     an integer percentage.
+   * @param etherDefenseEffect the ether defense buff or debuff applied by the attack.
+   * @param etherDefenseEffectTime the number of turns the ether defense buff or debuff lasts.
+   * @param etherDefenseEffectChance the chance to inflict the ether defense buff or debuff as an
+   *     integer percentage.
+   * @param potentialEffect the potential buff or debuff applied by the attack.
+   * @param potentialEffectTime the number of turns the potential buff or debuff lasts.
+   * @param potentialEffectChance the chance to inflict the potential buff or debuff as an integer
+   *     percentage.
+   */
+  protected Attack(
+      String title,
+      String description,
+      int hits,
+      boolean aoe,
+      int accuracy,
+      double multiplier,
+      int dazeChance,
+      boolean heal,
+      boolean leech,
+      int burnTime,
+      int poisonTime,
+      EffectMultiplier physicalDefenseEffect,
+      int physicalDefenseEffectTime,
+      int physicalDefenseEffectChance,
+      EffectMultiplier physicalAttackEffect,
+      int physicalAttackEffectTime,
+      int physicalAttackEffectChance,
+      EffectMultiplier etherDefenseEffect,
+      int etherDefenseEffectTime,
+      int etherDefenseEffectChance,
+      EffectMultiplier potentialEffect,
+      int potentialEffectTime,
+      int potentialEffectChance) {
+    // Use setters for input validation
+    setTitle(title);
+    setDescription(description);
+    setHits(hits);
+    setAoe(aoe);
+    setAccuracy(accuracy);
+    setMultiplier(multiplier);
+    setDazeChance(dazeChance);
+    setHeal(heal);
+    setLeech(leech);
+    setBurnTime(burnTime);
+    setPoisonTime(poisonTime);
+    setPhysicalDefenseEffect(physicalDefenseEffect);
+    setPhysicalDefenseEffectTime(physicalDefenseEffectTime);
+    setPhysicalDefenseEffectChance(physicalDefenseEffectChance);
+    setPhysicalAttackEffect(physicalAttackEffect);
+    setPhysicalAttackEffectTime(physicalAttackEffectTime);
+    setPhysicalAttackEffectChance(physicalAttackEffectChance);
+    setEtherDefenseEffect(etherDefenseEffect);
+    setEtherDefenseEffectTime(etherDefenseEffectTime);
+    setEtherDefenseEffectChance(etherDefenseEffectChance);
+    setPotentialEffect(potentialEffect);
+    setPotentialEffectTime(potentialEffectTime);
+    setPotentialEffectChance(potentialEffectChance);
+  }
+
+  /**
+   * Constructs a new Attack with values copied from another Attack.
+   *
+   * @param attack The Attack to copy.
+   */
+  protected Attack(Attack attack) {
+    setTitle(attack.getTitle());
+    setDescription(attack.getDescription());
+    setHits(attack.getHits());
+    setAoe(attack.isAoe());
+    setAccuracy(attack.getAccuracy());
+    setMultiplier(attack.getMultiplier());
+    setDazeChance(attack.getDazeChance());
+    setHeal(attack.isHeal());
+    setLeech(attack.isLeech());
+    setBurnTime(attack.getBurnTime());
+    setPoisonTime(attack.getPoisonTime());
+    setPhysicalDefenseEffect(attack.getPhysicalDefenseEffect());
+    setPhysicalDefenseEffectTime(attack.getPhysicalDefenseEffectTime());
+    setPhysicalDefenseEffectChance(attack.getPhysicalDefenseEffectChance());
+    setPhysicalAttackEffect(attack.getPhysicalAttackEffect());
+    setPhysicalAttackEffectTime(attack.getPhysicalAttackEffectTime());
+    setPhysicalAttackEffectChance(attack.getPhysicalAttackEffectChance());
+    setEtherDefenseEffect(attack.getEtherDefenseEffect());
+    setEtherDefenseEffectTime(attack.getEtherDefenseEffectTime());
+    setEtherDefenseEffectChance(attack.getEtherDefenseEffectChance());
+    setPotentialEffect(attack.getPotentialEffect());
+    setPotentialEffectTime(attack.getPotentialEffectTime());
+    setPotentialEffectChance(attack.getPotentialEffectChance());
   }
 
   /** {@return the title of the attack.} */
@@ -607,8 +719,8 @@ public abstract class Attack {
   }
 
   /**
-   * Limits an integer to the integer percentage range 0-100 inclusive.
-   * Values outside the bounds will be rounded to the nearest valid value.
+   * Limits an integer to the integer percentage range 0-100 inclusive. Values outside the bounds
+   * will be rounded to the nearest valid value.
    *
    * @param value The integer to constrain.
    * @return The constrained integer percentage.
@@ -654,7 +766,7 @@ public abstract class Attack {
         aoe,
         accuracy,
         multiplier,
-            dazeChance,
+        dazeChance,
         heal,
         leech,
         burnTime,
@@ -690,7 +802,7 @@ public abstract class Attack {
         + accuracy
         + ", multiplier="
         + multiplier
-        + ", dazePercent="
+        + ", dazeChance="
         + dazeChance
         + ", heal="
         + heal

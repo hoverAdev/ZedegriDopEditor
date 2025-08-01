@@ -1,6 +1,8 @@
 package com.ambiencetown.zedegridop.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+import org.jetbrains.annotations.*;
 
 /**
  * A type of enemy in the Zedegri DOP engine.
@@ -28,7 +30,7 @@ public enum EnemyType {
    *     {@code null} if no match is found.
    */
   @JsonCreator
-  public static EnemyType fromString(String value) {
+  public static @Nullable EnemyType fromString(String value) {
     return switch (value) {
       case "Animal" -> ANIMAL;
       case "Human" -> HUMAN;
@@ -40,7 +42,8 @@ public enum EnemyType {
   }
 
   @Override
-  public String toString() {
+  @JsonValue
+  public @NotNull String toString() {
     return switch (this) {
       case ANIMAL -> "Animal";
       case HUMAN -> "Human";

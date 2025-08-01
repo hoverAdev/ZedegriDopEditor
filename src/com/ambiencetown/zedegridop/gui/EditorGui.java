@@ -17,18 +17,32 @@ public class EditorGui extends JFrame {
   private final List<EtherAttack> ethers;
   private final List<Enemy> enemies;
   private final List<EnemyAttack> enemyAttacks;
+
+  private final DefaultListModel<Player> playersListModel;
+  private final DefaultListModel<EnemyAttack> enemyAttacksListModel;
+
   private final ObjectMapper mapper;
 
   public EditorGui() {
     // Create lists
     players = new ArrayList<>();
     players.add(new Player());
+
     ethers = new ArrayList<>();
     ethers.add(new EtherAttack());
+
     enemies = new ArrayList<>();
     enemies.add(new Enemy());
+
     enemyAttacks = new ArrayList<>();
     enemyAttacks.add(new EnemyAttack());
+
+    // Create list models for lists
+    playersListModel = new DefaultListModel<>();
+    playersListModel.addAll(players);
+
+    enemyAttacksListModel = new DefaultListModel<>();
+    enemyAttacksListModel.addAll(enemyAttacks);
 
     // Create mapper
     mapper = new ObjectMapper();
@@ -54,9 +68,9 @@ public class EditorGui extends JFrame {
 
     JTabbedPane tabbedPane = new JTabbedPane();
 
-    PlayersPanel playersPanel = new PlayersPanel(players, mapper);
+    PlayersPanel playersPanel = new PlayersPanel(players, playersListModel, mapper);
     JPanel etherPanel = new EthersPanel(ethers, mapper);
-    JPanel enemiesPanel = new EnemiesPanel(enemies, mapper);
+    JPanel enemiesPanel = new EnemiesPanel(enemies, enemyAttacksListModel, mapper);
     JPanel enemyAttacksPanel = new EnemyAttacksPanel(enemyAttacks, mapper);
 
     tabbedPane.addTab("Players", playersPanel);

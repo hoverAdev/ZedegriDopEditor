@@ -50,8 +50,8 @@ public class EtherAttack extends Attack {
   /** The amount of Ether Defense Up the attack grants. */
   private int etherDefenseUp;
 
-  /** The amount of Ether Attack Up the attack grants. */
-  private int etherAttackUp;
+  /** The amount of Potential Up the attack grants. */
+  private int potentialUp;
 
   /** The amount of Speed Up the attack grants. */
   private int speedUp;
@@ -66,8 +66,138 @@ public class EtherAttack extends Attack {
     physicalDefenseUp = 0;
     physicalAttackUp = 0;
     etherDefenseUp = 0;
-    etherAttackUp = 0;
+    potentialUp = 0;
     speedUp = 0;
+  }
+
+  /**
+   * Constructs an Ether Attack with parameterized values.
+   *
+   * @param user the user of the attack.
+   * @param title the title of the attack.
+   * @param description the description of the attack.
+   * @param ep the EP cost of the attack.
+   * @param hits the number of hits the attack deals.
+   * @param aoe whether the attack is an Area of Effect.
+   * @param accuracy the accuracy of the attack.
+   * @param multiplier the multiplier of the attack.
+   * @param dazeTarget the types of enemy the daze targets.
+   * @param dazeChance the chance that the attack will inflict Daze as an integer percentage.
+   * @param heal whether the attack is a healing attack.
+   * @param purge whether the attack inflicts Purge.
+   * @param leech whether the attack leeches health from enemies.
+   * @param type the type of the attack.
+   * @param burnTime the number of turns to inflict Burn.
+   * @param poisonTime the number of turns to inflict Poison.
+   * @param physicalDefenseEffect the physical defense buff or debuff applied by the attack.
+   * @param physicalDefenseEffectTime the number of turns the physical defense buff or debuff lasts.
+   * @param physicalDefenseEffectChance the chance to inflict the physical defense buff or debuff as
+   *     an integer percentage.
+   * @param physicalAttackEffect the physical attack buff or debuff applied by the attack.
+   * @param physicalAttackEffectTime the number of turns the physical attack buff or debuff lasts.
+   * @param physicalAttackEffectChance the chance to inflict the physical attack buff or debuff as
+   *     an integer percentage.
+   * @param etherDefenseEffect the ether defense buff or debuff applied by the attack.
+   * @param etherDefenseEffectTime the number of turns the ether defense buff or debuff lasts.
+   * @param etherDefenseEffectChance the chance to inflict the ether defense buff or debuff as an
+   *     integer percentage.
+   * @param potentialEffect the potential buff or debuff applied by the attack.
+   * @param potentialEffectTime the number of turns the potential buff or debuff lasts.
+   * @param potentialEffectChance the chance to inflict the potential buff or debuff as an integer
+   *     percentage.
+   * @param physicalDefenseUp the amount of Physical Defense Up the attack grants.
+   * @param physicalAttackUp the amount of Physical Attack Up the attack grants.
+   * @param etherDefenseUp the amount of Ether Defense Up the attack grants.
+   * @param potentialUp the amount of Potential Up the attack grants.
+   * @param speedUp the amount of Speed Up the attack grants.
+   */
+  public EtherAttack(
+      String user,
+      String title,
+      String description,
+      int ep,
+      int hits,
+      boolean aoe,
+      int accuracy,
+      double multiplier,
+      Set<EnemyType> dazeTarget,
+      int dazeChance,
+      boolean heal,
+      boolean purge,
+      boolean leech,
+      EtherAttackType type,
+      int burnTime,
+      int poisonTime,
+      EffectMultiplier physicalDefenseEffect,
+      int physicalDefenseEffectTime,
+      int physicalDefenseEffectChance,
+      EffectMultiplier physicalAttackEffect,
+      int physicalAttackEffectTime,
+      int physicalAttackEffectChance,
+      EffectMultiplier etherDefenseEffect,
+      int etherDefenseEffectTime,
+      int etherDefenseEffectChance,
+      EffectMultiplier potentialEffect,
+      int potentialEffectTime,
+      int potentialEffectChance,
+      int physicalDefenseUp,
+      int physicalAttackUp,
+      int etherDefenseUp,
+      int potentialUp,
+      int speedUp) {
+    super(
+        title,
+        description,
+        hits,
+        aoe,
+        accuracy,
+        multiplier,
+        dazeChance,
+        heal,
+        leech,
+        burnTime,
+        poisonTime,
+        physicalDefenseEffect,
+        physicalDefenseEffectTime,
+        physicalDefenseEffectChance,
+        physicalAttackEffect,
+        physicalAttackEffectTime,
+        physicalAttackEffectChance,
+        etherDefenseEffect,
+        etherDefenseEffectTime,
+        etherDefenseEffectChance,
+        potentialEffect,
+        potentialEffectTime,
+        potentialEffectChance);
+    setUser(user);
+    setEp(ep);
+    setDazeTarget(dazeTarget);
+    setPurge(purge);
+    setType(type);
+    setPhysicalDefenseUp(physicalDefenseUp);
+    setPhysicalAttackUp(physicalAttackUp);
+    setEtherDefenseUp(etherDefenseUp);
+    setPotentialUp(potentialUp);
+    setSpeedUp(speedUp);
+  }
+
+  /**
+   * Constructs an Ether Attack using values copied from another Ether Attack.
+   *
+   * @param etherAttack the Ether Attack to copy.
+   */
+  public EtherAttack(EtherAttack etherAttack) {
+    super(etherAttack);
+    setUser(etherAttack.getUser());
+    setEp(etherAttack.getEp());
+    setDazeTarget(new HashSet<>(etherAttack.getDazeTarget()));
+    setPurge(etherAttack.isPurge());
+    setType(etherAttack.getType());
+    setPhysicalDefenseUp(etherAttack.getPhysicalDefenseUp());
+    setPhysicalAttackUp(etherAttack.getPhysicalAttackUp());
+    setEtherDefenseUp(etherAttack.getEtherDefenseUp());
+    setPotentialUp(etherAttack.getPotentialUp());
+    setSpeedUp(etherAttack.getSpeedUp());
   }
 
   /** {@return the user of the attack.} */
@@ -138,11 +268,13 @@ public class EtherAttack extends Attack {
   /**
    * A special deserializer to enable compatibility with existing code.
    *
-   * @param dazeTarget A string containing the names of all the relevant EnemyTypes. Treated without case-sensitivity.
+   * @param dazeTarget A string containing the names of all the relevant EnemyTypes. Treated without
+   *     case-sensitivity.
    * @see EtherAttack#setDazeTarget(Set)
    */
   @JsonProperty("Daze_Target")
   public void setDazeTargetJson(String dazeTarget) {
+    this.dazeTarget.clear();
     for (EnemyType enemyType : EnemyType.values()) {
       if (dazeTarget.toLowerCase().contains(enemyType.toString().toLowerCase())) {
         this.dazeTarget.add(enemyType);
@@ -314,42 +446,42 @@ public class EtherAttack extends Attack {
 
   /** {@return the amount of Ether Attack Up the attack grants.} */
   @JsonIgnore
-  public int getEtherAttackUp() {
-    return etherAttackUp;
+  public int getPotentialUp() {
+    return potentialUp;
   }
 
   /**
    * Special serializer to enable compatibility with existing code.
    *
    * @return {@code false} if 0, otherwise the integer value of {@code etherAttackUp}.
-   * @see EtherAttack#getEtherAttackUp()
+   * @see EtherAttack#getPotentialUp()
    */
   @JsonProperty("ETH_ATK_UP")
   public Object getEtherAttackUpJson() {
-    if (etherAttackUp == 0) return false;
-    else return etherAttackUp;
+    if (potentialUp == 0) return false;
+    else return potentialUp;
   }
 
   /**
    * Sets the amount of Ether Attack Up the attack grants.
    *
-   * @param etherAttackUp the amount of Ether Attack Up the attack grants.
+   * @param potentialUp the amount of Ether Attack Up the attack grants.
    */
   @JsonIgnore
-  public void setEtherAttackUp(int etherAttackUp) {
-    this.etherAttackUp = etherAttackUp;
+  public void setPotentialUp(int potentialUp) {
+    this.potentialUp = potentialUp;
   }
 
   /**
    * Special deserializer to enable compatibility with existing code.
    *
    * @param ethAtkUp The value read from the JSON file.
-   * @see EtherAttack#setEtherAttackUp(int)
+   * @see EtherAttack#setPotentialUp(int)
    */
   @JsonProperty("ETH_ATK_UP")
   public void setEtherAttackUpJson(Object ethAtkUp) {
-    if (ethAtkUp instanceof Boolean && !((Boolean) ethAtkUp)) this.etherAttackUp = 0;
-    else if (ethAtkUp instanceof Integer) setEtherAttackUp((Integer) ethAtkUp);
+    if (ethAtkUp instanceof Boolean && !((Boolean) ethAtkUp)) this.potentialUp = 0;
+    else if (ethAtkUp instanceof Integer) setPotentialUp((Integer) ethAtkUp);
     else
       throw new IllegalArgumentException(
           "Input " + ethAtkUp.toString() + " not false or an integer");
@@ -380,7 +512,7 @@ public class EtherAttack extends Attack {
         && physicalDefenseUp == that.physicalDefenseUp
         && physicalAttackUp == that.physicalAttackUp
         && etherDefenseUp == that.etherDefenseUp
-        && etherAttackUp == that.etherAttackUp
+        && potentialUp == that.potentialUp
         && speedUp == that.speedUp
         && Objects.equals(user, that.user)
         && Objects.equals(dazeTarget, that.dazeTarget)
@@ -399,7 +531,7 @@ public class EtherAttack extends Attack {
         physicalDefenseUp,
         physicalAttackUp,
         etherDefenseUp,
-        etherAttackUp,
+        potentialUp,
         speedUp);
   }
 
@@ -424,8 +556,8 @@ public class EtherAttack extends Attack {
         + physicalAttackUp
         + ", etherDefenseUp="
         + etherDefenseUp
-        + ", etherAttackUp="
-        + etherAttackUp
+        + ", potentialUp="
+        + potentialUp
         + ", speedUp="
         + speedUp
         + "} "
