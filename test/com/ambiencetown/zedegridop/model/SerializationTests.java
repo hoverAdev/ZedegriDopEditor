@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;

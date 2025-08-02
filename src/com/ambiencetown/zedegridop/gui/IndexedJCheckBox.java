@@ -1,17 +1,33 @@
 package com.ambiencetown.zedegridop.gui;
 
-import javax.swing.*;
+import javax.swing.JCheckBox;
 
-public class IndexedJCheckBox extends JCheckBox {
-  private int index;
-  private boolean checked;
+/**
+ * JCheckBox with an added index. Can be used to map a checkbox to a corresponding value.
+ *
+ * @param <T> The index's type.
+ */
+public class IndexedJCheckBox<T> extends JCheckBox {
+  /**
+   * The index of the indexed checkbox.
+   */
+  private final T index;
 
-  public IndexedJCheckBox(int index, String text) {
+  /**
+   * Constructs a new IndexedJCheckBox.
+   *
+   * @param index The index of the indexed checkbox.
+   * @param text The label of the checkbox.
+   */
+  public IndexedJCheckBox(T index, String text) {
     super(text, false);
     this.index = index;
   }
 
-  public int getIndex() {
+  /**
+   * {@return the index of the indexed checkbox.}
+   */
+  public T getIndex() {
     return index;
   }
 }

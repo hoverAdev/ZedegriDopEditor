@@ -1,7 +1,11 @@
 package com.ambiencetown.zedegridop.gui;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.SpinnerNumberModel;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -93,6 +97,17 @@ public class GuiFunctions {
   }
 
   /**
+   * Creates a new numeric Spinner Model for positive long integers bound by an upper limit.
+   *
+   * @param max The maximum value of the spinner.
+   * @return A new {@code SpinnerNumberModel} with the specified maximum.
+   */
+  @Contract(value = "_ -> new", pure = true)
+  public static @NotNull SpinnerNumberModel getNewNumberModel(long max) {
+    return getNewNumberModel(max, 0);
+  }
+
+  /**
    * Creates a new numeric Spinner model for positive integers bound by an upper limit.
    *
    * @param max The upper limit of the Spinner.
@@ -101,6 +116,18 @@ public class GuiFunctions {
    */
   @Contract(value = "_, _ -> new", pure = true)
   public static @NotNull SpinnerNumberModel getNewNumberModel(int max, int value) {
+    return getNewNumberModel(0, max, value);
+  }
+
+  /**
+   * Creates a new numeric Spinner model for positive long integers bound by an upper limit.
+   *
+   * @param max The upper limit of the Spinner.
+   * @param value The default value of the Spinner.
+   * @return A new {@code SpinnerNumberModel} with the specified maximum and value.
+   */
+  @Contract(value = "_, _ -> new", pure = true)
+  public static @NotNull SpinnerNumberModel getNewNumberModel(long max, long value) {
     return getNewNumberModel(0, max, value);
   }
 
@@ -114,6 +141,19 @@ public class GuiFunctions {
    */
   @Contract(value = "_, _, _ -> new", pure = true)
   public static @NotNull SpinnerNumberModel getNewNumberModel(int min, int max, int value) {
+    return new SpinnerNumberModel(value, min, max, 1);
+  }
+
+  /**
+   * Creates a new numeric Spinner model for long integers bound by lower and upper limits.
+   *
+   * @param min the lower limit of the Spinner.
+   * @param max the upper limit of the Spinner.
+   * @param value the default value of the Spinner.
+   * @return A new {@code SpinnerNumberModel} with the specified bounds and value.
+   */
+  @Contract(value = "_, _, _ -> new", pure = true)
+  public static @NotNull SpinnerNumberModel getNewNumberModel(long min, long max, long value) {
     return new SpinnerNumberModel(value, min, max, 1);
   }
 

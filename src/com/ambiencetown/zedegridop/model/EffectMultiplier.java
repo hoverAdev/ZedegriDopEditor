@@ -2,7 +2,8 @@ package com.ambiencetown.zedegridop.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
-import org.jetbrains.annotations.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /** A stat multiplier for a buff or debuff in the Zedegri DOP Engine. */
 public enum EffectMultiplier {

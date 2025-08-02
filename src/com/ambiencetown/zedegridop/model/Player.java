@@ -36,7 +36,7 @@ public class Player extends Combatant {
    * @param ap the amount of Attack Points the player has.
    * @param ep the amount of Ether Points the player has.
    */
-  public Player(String name, int hp, int defense, int etherDefense, int speed, int attack, int potential, int ap, int ep) {
+  public Player(String name, long hp, int defense, int etherDefense, int speed, int attack, int potential, int ap, int ep) {
     super(name, hp, defense, etherDefense, speed, attack, potential);
     setAp(ap);
     setEp(ep);
@@ -82,7 +82,7 @@ public class Player extends Combatant {
    */
   @JsonProperty("EP")
   public void setEp(int ep) {
-    this.ep = ep;
+    this.ep = Math.max(0, Math.min(ep, 32));
   }
 
   @Override

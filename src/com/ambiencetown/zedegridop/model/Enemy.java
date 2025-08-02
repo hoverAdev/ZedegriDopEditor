@@ -1,9 +1,9 @@
 package com.ambiencetown.zedegridop.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import java.util.*;
-
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -43,7 +43,7 @@ public class Enemy extends Combatant {
    * @param potential the potential of the enemy combatant.
    * @param attacks the list of attacks of the enemy.
    */
-  public Enemy(String name, EnemyType type, int hp, int defense, int etherDefense, int speed, int attack, int potential, Set<Integer> attacks) {
+  public Enemy(String name, EnemyType type, long hp, int defense, int etherDefense, int speed, int attack, int potential, Set<Integer> attacks) {
     // Use setters for input validation
     super(name, hp, defense, etherDefense, speed, attack, potential);
     setType(type);

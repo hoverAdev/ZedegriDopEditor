@@ -270,7 +270,7 @@ public abstract class Attack {
    */
   @JsonProperty("Hits")
   public void setHits(int hits) {
-    this.hits = hits;
+    this.hits = Math.max(0, Math.min(hits, 16));
   }
 
   /** {@return whether the attack hits multiple enemies.} */
@@ -407,7 +407,7 @@ public abstract class Attack {
    */
   @JsonProperty("BURN_TM")
   public void setBurnTime(int burnTime) {
-    this.burnTime = burnTime;
+    this.burnTime = Math.max(0, Math.min(burnTime, 32));
   }
 
   /** {@return the number of turns to inflict Poison.} */
@@ -423,7 +423,7 @@ public abstract class Attack {
    */
   @JsonProperty("POISON_TM")
   public void setPoisonTime(int poisonTime) {
-    this.poisonTime = poisonTime;
+    this.poisonTime = Math.max(0, Math.min(poisonTime, 32));
   }
 
   /** {@return the physical defense buff or debuff applied by the attack.} */
@@ -477,7 +477,7 @@ public abstract class Attack {
    */
   @JsonProperty("PHYS_DEF_TM")
   public void setPhysicalDefenseEffectTime(int physicalDefenseEffectTime) {
-    this.physicalDefenseEffectTime = physicalDefenseEffectTime;
+    this.physicalDefenseEffectTime = Math.max(0, Math.min(physicalDefenseEffectTime, 32));
   }
 
   /**
@@ -552,7 +552,7 @@ public abstract class Attack {
    */
   @JsonProperty("PHYS_ATK_TM")
   public void setPhysicalAttackEffectTime(int physicalAttackEffectTime) {
-    this.physicalAttackEffectTime = physicalAttackEffectTime;
+    this.physicalAttackEffectTime = Math.max(0, Math.min(physicalAttackEffectTime, 32));
   }
 
   /**
@@ -625,7 +625,7 @@ public abstract class Attack {
    */
   @JsonProperty("ETH_DEF_TM")
   public void setEtherDefenseEffectTime(int etherDefenseEffectTime) {
-    this.etherDefenseEffectTime = etherDefenseEffectTime;
+    this.etherDefenseEffectTime = Math.max(0, Math.min(etherDefenseEffectTime, 32));
   }
 
   /** {@return the chance to inflict the ether defense buff or debuff as an integer percentage.} */
@@ -696,7 +696,7 @@ public abstract class Attack {
    */
   @JsonProperty("ETH_ATK_TM")
   public void setPotentialEffectTime(int potentialEffectTime) {
-    this.potentialEffectTime = potentialEffectTime;
+    this.potentialEffectTime = Math.max(0, Math.min(potentialEffectTime, 32));
   }
 
   /** {@return the chance to inflict the potential buff or debuff as an integer percentage.} */

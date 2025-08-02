@@ -2,7 +2,9 @@ package com.ambiencetown.zedegridop.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Represents an Ether attack in the Zedegri DOP Engine. Ether attacks are considered a type of
@@ -229,7 +231,7 @@ public class EtherAttack extends Attack {
    */
   @JsonProperty("EP")
   public void setEp(int ep) {
-    this.ep = ep;
+    this.ep = Math.max(0, Math.min(ep, 8));
   }
 
   /** {@return the types of enemy the daze targets.} */
@@ -339,7 +341,7 @@ public class EtherAttack extends Attack {
    */
   @JsonIgnore
   public void setPhysicalDefenseUp(int physicalDefenseUp) {
-    this.physicalDefenseUp = physicalDefenseUp;
+    this.physicalDefenseUp = Math.max(0, Math.min(physicalDefenseUp, 8));
   }
 
   /**
@@ -383,7 +385,7 @@ public class EtherAttack extends Attack {
    */
   @JsonIgnore
   public void setPhysicalAttackUp(int physicalAttackUp) {
-    this.physicalAttackUp = physicalAttackUp;
+    this.physicalAttackUp = Math.max(0, Math.min(physicalAttackUp, 8));
   }
 
   /**
@@ -426,7 +428,7 @@ public class EtherAttack extends Attack {
    */
   @JsonIgnore
   public void setEtherDefenseUp(int etherDefenseUp) {
-    this.etherDefenseUp = etherDefenseUp;
+    this.etherDefenseUp = Math.max(0, Math.min(etherDefenseUp, 8));
   }
 
   /**
@@ -469,7 +471,7 @@ public class EtherAttack extends Attack {
    */
   @JsonIgnore
   public void setPotentialUp(int potentialUp) {
-    this.potentialUp = potentialUp;
+    this.potentialUp = Math.max(0, Math.min(potentialUp, 8));
   }
 
   /**
@@ -500,7 +502,7 @@ public class EtherAttack extends Attack {
    */
   @JsonProperty("SPD_UP")
   public void setSpeedUp(int speedUp) {
-    this.speedUp = speedUp;
+    this.speedUp = Math.max(0, Math.min(speedUp, 8));
   }
 
   @Override

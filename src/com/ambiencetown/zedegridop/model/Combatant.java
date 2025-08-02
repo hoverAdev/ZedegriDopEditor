@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents a combatant in the Zedegri DOP Engine, such as {@link Player}s and {@link Enemy}s.
@@ -16,7 +17,7 @@ public abstract class Combatant {
   private String name;
 
   /** The health points of the combatant. */
-  private int hp;
+  private long hp;
 
   /** The defense of the combatant. */
   private int defense;
@@ -56,7 +57,7 @@ public abstract class Combatant {
    * @param potential the potential of the combatant.
    */
   protected Combatant(
-      String name, int hp, int defense, int etherDefense, int speed, int attack, int potential) {
+      @NotNull String name, long hp, int defense, int etherDefense, int speed, int attack, int potential) {
     // Use setters for input validation
     setName(name);
     setHp(hp);
@@ -84,7 +85,7 @@ public abstract class Combatant {
 
   /** {@return the name of the combatant.} */
   @JsonProperty("Name")
-  public String getName() {
+  public @NotNull String getName() {
     return name;
   }
 
@@ -94,13 +95,13 @@ public abstract class Combatant {
    * @param name the name of the combatant.
    */
   @JsonProperty("Name")
-  public void setName(String name) {
+  public void setName(@NotNull String name) {
     this.name = name;
   }
 
   /** {@return the health points of the combatant.} */
   @JsonProperty("HP")
-  public int getHp() {
+  public long getHp() {
     return hp;
   }
 
@@ -110,7 +111,7 @@ public abstract class Combatant {
    * @param hp the health points of the combatant.
    */
   @JsonProperty("HP")
-  public void setHp(int hp) {
+  public void setHp(long hp) {
     this.hp = hp;
   }
 
@@ -171,9 +172,7 @@ public abstract class Combatant {
    */
   @JsonIgnore
   public void setSpeed(int speed) {
-    if (speed < 0) this.speed = 0;
-    else if (speed > 255) this.speed = 255;
-    else this.speed = speed;
+    this.speed = Math.max(0, Math.min(speed, 255));
   }
 
   @JsonProperty("Speed")

@@ -7,10 +7,12 @@ import com.ambiencetown.zedegridop.model.Player;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 
 public class EditorGui extends JFrame {
   private final List<Player> players;
@@ -18,12 +20,9 @@ public class EditorGui extends JFrame {
   private final List<Enemy> enemies;
   private final List<EnemyAttack> enemyAttacks;
 
-  private final DefaultListModel<Player> playersListModel;
-  private final DefaultListModel<EnemyAttack> enemyAttacksListModel;
-
   private final ObjectMapper mapper;
 
-  public EditorGui() {
+  protected EditorGui() {
     // Create lists
     players = new ArrayList<>();
     players.add(new Player());
@@ -37,12 +36,6 @@ public class EditorGui extends JFrame {
     enemyAttacks = new ArrayList<>();
     enemyAttacks.add(new EnemyAttack());
 
-    // Create list models for lists
-    playersListModel = new DefaultListModel<>();
-    playersListModel.addAll(players);
-
-    enemyAttacksListModel = new DefaultListModel<>();
-    enemyAttacksListModel.addAll(enemyAttacks);
 
     // Create mapper
     mapper = new ObjectMapper();
@@ -68,10 +61,10 @@ public class EditorGui extends JFrame {
 
     JTabbedPane tabbedPane = new JTabbedPane();
 
-    PlayersPanel playersPanel = new PlayersPanel(players, playersListModel, mapper);
-    JPanel etherPanel = new EthersPanel(ethers, mapper);
-    JPanel enemiesPanel = new EnemiesPanel(enemies, enemyAttacksListModel, mapper);
-    JPanel enemyAttacksPanel = new EnemyAttacksPanel(enemyAttacks, mapper);
+    EthersPanel etherPanel = new EthersPanel(ethers, players, mapper);
+    PlayersPanel playersPanel = new PlayersPanel(players, etherPanel, mapper);
+    EnemiesPanel enemiesPanel = new EnemiesPanel(enemies, enemyAttacks, mapper);
+    EnemyAttacksPanel enemyAttacksPanel = new EnemyAttacksPanel(enemyAttacks, enemiesPanel, mapper);
 
     tabbedPane.addTab("Players", playersPanel);
     tabbedPane.addTab("Ether Arts", etherPanel);

@@ -1,7 +1,8 @@
 package com.ambiencetown.zedegridop.gui;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.EventQueue;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 /** Functional starting point for the Zedegri DOP graphical editor. */
 public class Editor {
@@ -41,7 +42,8 @@ public class Editor {
       try {
         UIManager.setLookAndFeel(lookAndFeel);
         return;
-      } catch (Exception e) {
+      } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
+               UnsupportedLookAndFeelException e) {
         exception = e;
       }
     }

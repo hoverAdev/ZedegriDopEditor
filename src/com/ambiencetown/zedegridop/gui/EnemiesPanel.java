@@ -7,22 +7,32 @@ import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.GridBagLayout;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.swing.*;
+import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.jetbrains.annotations.NotNull;
 
@@ -76,7 +86,7 @@ public class EnemiesPanel extends JPanel {
   private JLabel potentialLabel;
   private JSpinner potentialInput;
 
-  private final DefaultListModel<EnemyAttack> attacksListModel;
+  private final List<EnemyAttack> enemyAttacks;
   private JScrollPane attacksListContainer;
   private JPanel attacksListPanel;
 
@@ -91,14 +101,21 @@ public class EnemiesPanel extends JPanel {
    * Creates a new EnemiesPanel.
    *
    * @param enemies The list of enemies to work on and modify.
+   * @param enemyAttacks the list of attacks. Required to update the list of shown attacks.
    * @param mapper The ObjectMapper used for reading and writing JSON data.
    */
-  public EnemiesPanel(
+  protected EnemiesPanel(
       @NotNull List<Enemy> enemies,
-      @NotNull DefaultListModel<EnemyAttack> attacksListModel,
+      @NotNull List<EnemyAttack> enemyAttacks,
       @NotNull ObjectMapper mapper) {
     this.enemies = enemies;
-    this.attacksListModel = attacksListModel;
+    if (enemies.isEmpty()) {
+      System.err.println("Empty enemies list provided to EnemiesPanel. A new enemy will be added.");
+      enemies.add(new Enemy());
+    }
+
+    this.enemyAttacks = enemyAttacks;
+
     this.mapper = mapper;
 
     setLayout(new BorderLayout());
@@ -106,6 +123,8 @@ public class EnemiesPanel extends JPanel {
     initializeComponents();
     initializeLayout();
     initializeEventHandlers();
+
+    enemiesList.setSelectedIndex(0);
   }
 
   private void initializeComponents() {
@@ -207,30 +226,6 @@ public class EnemiesPanel extends JPanel {
   }
 
   private void initializeEventHandlers() {
-    attacksListModel.addListDataListener(
-        new ListDataListener() {
-          @Override
-          public void intervalAdded(ListDataEvent e) {
-            updateAttacks();
-          }
-
-          @Override
-          public void intervalRemoved(ListDataEvent e) {
-            updateAttacks();
-          }
-
-          @Override
-          public void contentsChanged(ListDataEvent e) {
-            updateAttacks();
-          }
-
-          private void updateAttacks() {
-            int index = enemiesList.getSelectedIndex();
-
-            buildAttacksList(enemies.get(index).getAttacks());
-          }
-        });
-
     enemiesList.addListSelectionListener(
         _ -> {
           int index = enemiesList.getSelectedIndex();
@@ -300,7 +295,59 @@ public class EnemiesPanel extends JPanel {
               }
             });
 
-    // TODO
+    typeInput.addActionListener(_ -> {
+      int index = enemiesList.getSelectedIndex();
+      if (index >= 0) {
+        EnemyType type = (EnemyType) typeInput.getSelectedItem();
+        if (type != null){
+        enemies.get(index).setType(type);}
+      }
+    });
+
+    hpInput.addChangeListener(_ -> {
+      int index = enemiesList.getSelectedIndex();
+      if (index >= 0) {
+        long val = (hpInput.getValue()) instanceof Double ? ((Double) hpInput.getValue()).longValue() : (long) hpInput.getValue();
+        enemies.get(index).setHp(val);
+      }
+    });
+
+    defenseInput.addChangeListener(_ -> {
+      int index = enemiesList.getSelectedIndex();
+      if (index >= 0) {
+        enemies.get(index).setDefense((int) defenseInput.getValue());
+      }
+    });
+
+    etherDefenseInput.addChangeListener(_ -> {
+      int index = enemiesList.getSelectedIndex();
+      if (index >= 0) {
+        enemies.get(index).setEtherDefense((int) etherDefenseInput.getValue());
+        }
+    });
+
+    speedInput.addChangeListener(_ -> {
+      int index = enemiesList.getSelectedIndex();
+      if (index >= 0) {
+        enemies.get(index).setSpeed((int) speedInput.getValue());
+      }
+            });
+
+    attackInput.addChangeListener(_ -> {
+      int index = enemiesList.getSelectedIndex();
+      if (index >= 0) {
+        enemies.get(index).setAttack(((int) attackInput.getValue()));
+      }
+    });
+
+    potentialInput.addChangeListener(_ -> {
+      int index = enemiesList.getSelectedIndex();
+      if (index >= 0) {
+        enemies.get(index).setPotential((int) potentialInput.getValue());
+      }
+    });
+
+    // see EnemiesPanel#buildAttacksList(Set) for the attacks event listener
 
     saveAsButton.addActionListener(
         _ -> {
@@ -308,6 +355,9 @@ public class EnemiesPanel extends JPanel {
 
           if (response == JFileChooser.APPROVE_OPTION) {
             savedFile = saveFileDialog.getSelectedFile();
+            if (!savedFile.getName().matches("[.]")) {
+              savedFile = new File(savedFile.getParentFile(), savedFile.getName() + ".json");
+            }
             saveFileDialog.setCurrentDirectory(savedFile.getParentFile());
 
             saveFile();
@@ -330,8 +380,12 @@ public class EnemiesPanel extends JPanel {
 
     reloadFileButton.addActionListener(_ -> loadFile());
   }
+  
+  public void update() {
+    int index = enemiesList.getSelectedIndex();
+    buildAttacksList(enemies.get(index).getAttacks());
+  }
 
-  /** Saves the current list of players to the file indicated by the savedFile field. */
   private void saveFile() {
     try {
       mapper.writeValue(savedFile, enemies);
@@ -348,13 +402,33 @@ public class EnemiesPanel extends JPanel {
       List<Enemy> inEnemies = mapper.readValue(loadedFile, type);
 
       if (!inEnemies.isEmpty()) {
+        enemies.clear();
+        listModel.clear();
+        for (Enemy inEnemy : inEnemies) {
+          enemies.add(inEnemy);
+          listModel.addElement(inEnemy.getName());
+        }
+
+        Enemy display = inEnemies.getFirst();
+
         enemiesList.setSelectedIndex(-1);
+
+        nameInput.setText(display.getName());
+        typeInput.setSelectedItem(display.getType());
+        hpInput.setValue(display.getHp());
+        defenseInput.setValue(display.getDefense());
+        etherDefenseInput.setValue(display.getEtherDefense());
+        speedInput.setValue(display.getSpeed());
+        attackInput.setValue(display.getAttack());
+        potentialInput.setValue(display.getPotential());
+
+        buildAttacksList(display.getAttacks());
 
         enemiesList.setSelectedIndex(0);
       } else GuiFunctions.printSwingError("File " + loadedFile.getName() + " is empty!", this);
     } catch (DatabindException | StreamReadException e) {
       GuiFunctions.printSwingError(
-          "File " + loadedFile.getName() + " is not a Players JSON!", this);
+          "File " + loadedFile.getName() + " is not an Enemies JSON!", this);
     } catch (IOException e) {
       GuiFunctions.printSwingError("Could not read from file " + loadedFile.getName() + "!", this);
     }
@@ -381,14 +455,14 @@ public class EnemiesPanel extends JPanel {
 
   private void createListModel() {
     listModel = new DefaultListModel<>();
-    listModel.add(0, "None");
+    enemies.forEach(t -> listModel.addElement(t.toString()));
   }
 
   private void createEnemiesList() {
     enemiesList = new JList<>(listModel);
     enemiesList.setOpaque(true);
     enemiesList.setBackground(Color.WHITE);
-    enemiesList.setSelectedIndex(0);
+    enemiesList.setSelectedIndex(-1);
   }
 
   private void createEnemiesListContainer() {
@@ -418,7 +492,7 @@ public class EnemiesPanel extends JPanel {
 
   private void createNameInput() {
     nameInput = new JTextField();
-    nameInput.setText("None");
+    nameInput.setText(enemies.getFirst().toString());
   }
 
   private void createTypeLabel() {
@@ -431,7 +505,8 @@ public class EnemiesPanel extends JPanel {
   }
 
   private void createHpInput() {
-    hpInput = new JSpinner(GuiFunctions.getNewNumberModel(Integer.MAX_VALUE));
+    hpInput =
+        new JSpinner(GuiFunctions.getNewNumberModel(Long.MAX_VALUE, enemies.getFirst().getHp()));
   }
 
   private void createDefenseLabel() {
@@ -439,7 +514,7 @@ public class EnemiesPanel extends JPanel {
   }
 
   private void createDefenseInput() {
-    defenseInput = new JSpinner(GuiFunctions.getNewNumberModel(Integer.MAX_VALUE));
+    defenseInput = new JSpinner(GuiFunctions.getNewNumberModel(Integer.MAX_VALUE, enemies.getFirst().getDefense()));
   }
 
   private void createEtherDefenseLabel() {
@@ -447,7 +522,7 @@ public class EnemiesPanel extends JPanel {
   }
 
   private void createEtherDefenseInput() {
-    etherDefenseInput = new JSpinner(GuiFunctions.getNewNumberModel(Integer.MAX_VALUE));
+    etherDefenseInput = new JSpinner(GuiFunctions.getNewNumberModel(Integer.MAX_VALUE, enemies.getFirst().getEtherDefense()));
   }
 
   private void createSpeedLabel() {
@@ -455,7 +530,7 @@ public class EnemiesPanel extends JPanel {
   }
 
   private void createSpeedInput() {
-    speedInput = new JSpinner(GuiFunctions.getNewNumberModel(255, 255));
+    speedInput = new JSpinner(GuiFunctions.getNewNumberModel(255, enemies.getFirst().getSpeed()));
   }
 
   private void createAttackLabel() {
@@ -463,7 +538,7 @@ public class EnemiesPanel extends JPanel {
   }
 
   private void createAttackInput() {
-    attackInput = new JSpinner(GuiFunctions.getNewNumberModel(Integer.MAX_VALUE));
+    attackInput = new JSpinner(GuiFunctions.getNewNumberModel(Integer.MAX_VALUE, enemies.getFirst().getAttack()));
   }
 
   private void createPotentialLabel() {
@@ -471,7 +546,7 @@ public class EnemiesPanel extends JPanel {
   }
 
   private void createPotentialInput() {
-    potentialInput = new JSpinner(GuiFunctions.getNewNumberModel(Integer.MAX_VALUE));
+    potentialInput = new JSpinner(GuiFunctions.getNewNumberModel(Integer.MAX_VALUE, enemies.getFirst().getPotential()));
   }
 
   private void createAttacksListContainer() {
@@ -481,7 +556,7 @@ public class EnemiesPanel extends JPanel {
   }
 
   private void createAttacksListPanel() {
-    buildAttacksList(new HashSet<>());
+    buildAttacksList(enemies.getFirst().getAttacks());
   }
 
   private void createTypeInput() {
@@ -527,10 +602,10 @@ public class EnemiesPanel extends JPanel {
     attacksListPanel.setBackground(Color.WHITE);
 
     int i = 0;
-    while (i < attacksListModel.getSize()) {
-      EnemyAttack attack = attacksListModel.getElementAt(i);
+    while (i < enemyAttacks.size()) {
+      EnemyAttack attack = enemyAttacks.get(i);
       String text = attack.getNumber() + ": " + attack.getTitle();
-      IndexedJCheckBox checkBox = new IndexedJCheckBox(attack.getNumber(), text);
+      IndexedJCheckBox<Integer> checkBox = new IndexedJCheckBox<>(attack.getNumber(), text);
       checkBox.setSelected(attacks.contains(i));
 
       attacksListPanel.add(checkBox, GuiFunctions.createConstraints(0, i));

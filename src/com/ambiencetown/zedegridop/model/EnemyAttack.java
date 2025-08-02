@@ -31,12 +31,7 @@ public class EnemyAttack extends Attack implements Comparable<EnemyAttack> {
 
   /** Constructs a new Enemy Attack with default values. */
   public EnemyAttack() {
-    this.number = 0;
-    this.type = EnemyAttackType.PHYSICAL_ATTACK;
-    this.target = "Enemy";
-    this.usePotential = false;
-    this.flicker = 0;
-    this.points = 0;
+    this(0);
   }
 
   /**
@@ -46,7 +41,7 @@ public class EnemyAttack extends Attack implements Comparable<EnemyAttack> {
    */
   public EnemyAttack(int number) {
     super();
-    this.number = number;
+    setNumber(number);
     this.type = EnemyAttackType.PHYSICAL_ATTACK;
     this.target = "Enemy";
     this.usePotential = false;
@@ -180,7 +175,7 @@ public class EnemyAttack extends Attack implements Comparable<EnemyAttack> {
    */
   @JsonProperty("Num")
   public void setNumber(int number) {
-    this.number = number;
+    this.number = Math.max(0, Math.min(number, 255));
   }
 
   /** {@return the type of the attack.} */
@@ -244,7 +239,7 @@ public class EnemyAttack extends Attack implements Comparable<EnemyAttack> {
    */
   @JsonProperty("Flicker")
   public void setFlicker(int flicker) {
-    this.flicker = flicker;
+    this.flicker = Math.max(0, Math.min(flicker, 128));
   }
 
   /** {@return the number of times the attack may be used.} */
@@ -260,7 +255,7 @@ public class EnemyAttack extends Attack implements Comparable<EnemyAttack> {
    */
   @JsonProperty("Points")
   public void setPoints(int points) {
-    this.points = points;
+    this.points = Math.max(0, Math.min(points, 255));
   }
 
   @Override

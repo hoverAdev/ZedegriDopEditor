@@ -5,18 +5,32 @@ import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.GridBagLayout;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import org.jetbrains.annotations.*;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * JPanel for editing the details of the Players array.
@@ -27,8 +41,7 @@ public class PlayersPanel extends JPanel {
   /** The list of players in which to store data. */
   private final List<Player> players;
 
-  /** The listModel used to track changes across panels. */
-  private final DefaultListModel<Player> playersListModel;
+  private final EthersPanel ethersPanel;
 
   /** The ObjectMapper used for reading and writing JSON data. */
   private final ObjectMapper mapper;
@@ -93,9 +106,9 @@ public class PlayersPanel extends JPanel {
    * @param players The list of players to work on and modify.
    * @param mapper The ObjectMapper used for reading and writing JSON data.
    */
-  public PlayersPanel(@NotNull List<Player> players, DefaultListModel<Player> playersListModel, @NotNull ObjectMapper mapper) {
+  protected PlayersPanel(@NotNull List<Player> players, EthersPanel ethersPanel, @NotNull ObjectMapper mapper) {
     this.players = players;
-    this.playersListModel = playersListModel;
+    this.ethersPanel = ethersPanel;
     this.mapper = mapper;
 
     setLayout(new GridBagLayout());
@@ -172,38 +185,47 @@ public class PlayersPanel extends JPanel {
     //      Name field
     formPanel.add(nameLabel, GuiFunctions.createConstraints(0, 0));
     formPanel.add(nameInput, GuiFunctions.createConstraints(1, 0, 3, 1));
+    nameLabel.setLabelFor(nameInput);
 
     //      HP field
     formPanel.add(hpLabel, GuiFunctions.createConstraints(0, 1));
     formPanel.add(hpInput, GuiFunctions.createConstraints(1, 1));
+    hpLabel.setLabelFor(hpInput);
 
     //      Defense field
     formPanel.add(defenseLabel, GuiFunctions.createConstraints(0, 2));
     formPanel.add(defenseInput, GuiFunctions.createConstraints(1, 2));
+    defenseLabel.setLabelFor(defenseInput);
 
     //      Ether defense field
     formPanel.add(etherDefenseLabel, GuiFunctions.createConstraints(0, 3));
     formPanel.add(etherDefenseInput, GuiFunctions.createConstraints(1, 3));
+    etherDefenseLabel.setLabelFor(etherDefenseInput);
 
     //      Speed field
     formPanel.add(speedLabel, GuiFunctions.createConstraints(0, 4));
     formPanel.add(speedInput, GuiFunctions.createConstraints(1, 4));
+    speedLabel.setLabelFor(speedInput);
 
     //      Attack field
     formPanel.add(attackLabel, GuiFunctions.createConstraints(2, 1));
     formPanel.add(attackInput, GuiFunctions.createConstraints(3, 1));
+    attackLabel.setLabelFor(attackInput);
 
     //      Potential field
     formPanel.add(potentialLabel, GuiFunctions.createConstraints(2, 2));
     formPanel.add(potentialInput, GuiFunctions.createConstraints(3, 2));
+    potentialLabel.setLabelFor(potentialInput);
 
     //      AP field
     formPanel.add(apLabel, GuiFunctions.createConstraints(2, 3));
     formPanel.add(apInput, GuiFunctions.createConstraints(3, 3));
+    apLabel.setLabelFor(apInput);
 
     //      EP field
     formPanel.add(epLabel, GuiFunctions.createConstraints(2, 4));
     formPanel.add(epInput, GuiFunctions.createConstraints(3, 4));
+    epLabel.setLabelFor(epInput);
 
     //      Filler
     formPanel.add(filler, GuiFunctions.createTallConstraints(0, 5, 4, 1));
@@ -239,8 +261,8 @@ public class PlayersPanel extends JPanel {
         _ -> {
           players.add(new Player());
           listModel.addElement(players.getLast().getName());
-          playersListModel.addElement(players.getLast());
           playersList.setSelectedIndex(listModel.getSize() - 1);
+          ethersPanel.update();
         });
 
     removePlayerButton.addActionListener(
@@ -248,8 +270,8 @@ public class PlayersPanel extends JPanel {
           int index = playersList.getSelectedIndex();
           if (index >= 0 && players.size() > 1) { // Don't allow user to remove the last element
             listModel.remove(index);
-            playersListModel.remove(index);
             players.remove(index);
+            ethersPanel.update();
           }
           if (index < listModel.size()) {
             playersList.setSelectedIndex(index);
@@ -286,8 +308,8 @@ public class PlayersPanel extends JPanel {
                 if (index >= 0) {
                   String name = nameInput.getText().isEmpty() ? " " : nameInput.getText();
                   players.get(index).setName(name);
-                  playersListModel.get(index).setName(name);
                   listModel.setElementAt(name, index);
+                  ethersPanel.update();
                 }
               }
             });
@@ -296,8 +318,8 @@ public class PlayersPanel extends JPanel {
         _ -> {
           int index = playersList.getSelectedIndex();
           if (index >= 0) {
-            players.get(index).setHp((int) hpInput.getValue());
-            playersListModel.get(index).setHp((int) hpInput.getValue());
+            long val = (hpInput.getValue()) instanceof Double ? ((Double) hpInput.getValue()).longValue() : (long) hpInput.getValue();
+            players.get(index).setHp(val);
           }
         });
 
@@ -306,7 +328,6 @@ public class PlayersPanel extends JPanel {
           int index = playersList.getSelectedIndex();
           if (index >= 0) {
             players.get(index).setDefense((int) defenseInput.getValue());
-            playersListModel.get(index).setDefense((int) defenseInput.getValue());
           }
         });
 
@@ -315,7 +336,6 @@ public class PlayersPanel extends JPanel {
           int index = playersList.getSelectedIndex();
           if (index >= 0) {
             players.get(index).setEtherDefense((int) etherDefenseInput.getValue());
-            playersListModel.get(index).setEtherDefense((int) etherDefenseInput.getValue());
           }
         });
 
@@ -324,7 +344,6 @@ public class PlayersPanel extends JPanel {
           int index = playersList.getSelectedIndex();
           if (index >= 0) {
             players.get(index).setSpeed((int) speedInput.getValue());
-            playersListModel.get(index).setSpeed((int) speedInput.getValue());
           }
         });
 
@@ -333,7 +352,6 @@ public class PlayersPanel extends JPanel {
           int index = playersList.getSelectedIndex();
           if (index >= 0) {
             players.get(index).setAttack(((int) attackInput.getValue()));
-            playersListModel.get(index).setAttack(((int) attackInput.getValue()));
           }
         });
 
@@ -342,7 +360,6 @@ public class PlayersPanel extends JPanel {
           int index = playersList.getSelectedIndex();
           if (index >= 0) {
             players.get(index).setPotential((int) potentialInput.getValue());
-            playersListModel.get(index).setPotential((int) potentialInput.getValue());
           }
         });
 
@@ -351,7 +368,6 @@ public class PlayersPanel extends JPanel {
           int index = playersList.getSelectedIndex();
           if (index >= 0) {
             players.get(index).setAp(((int) apInput.getValue()));
-            playersListModel.get(index).setAp(((int) apInput.getValue()));
           }
         });
 
@@ -360,7 +376,6 @@ public class PlayersPanel extends JPanel {
           int index = playersList.getSelectedIndex();
           if (index >= 0) {
             players.get(index).setEp(((int) epInput.getValue()));
-            playersListModel.get(index).setEp(((int) epInput.getValue()));
           }
         });
 
@@ -370,6 +385,9 @@ public class PlayersPanel extends JPanel {
 
           if (response == JFileChooser.APPROVE_OPTION) {
             savedFile = saveFileDialog.getSelectedFile();
+            if (!savedFile.getName().matches("[.]")) {
+              savedFile = new File(savedFile.getParentFile(), savedFile.getName() + ".json");
+            }
             saveFileDialog.setCurrentDirectory(savedFile.getParentFile());
 
             saveFile();
@@ -420,6 +438,7 @@ public class PlayersPanel extends JPanel {
           players.add(inPlayers.get(i));
           listModel.add(i, inPlayers.get(i).getName());
         }
+        ethersPanel.update();
 
         // Reset display values to the first element for consistency
         Player display = inPlayers.getFirst();
@@ -518,7 +537,7 @@ public class PlayersPanel extends JPanel {
   }
 
   private void createHpInput() {
-    hpInput = new JSpinner(GuiFunctions.getNewNumberModel(Integer.MAX_VALUE));
+    hpInput = new JSpinner(GuiFunctions.getNewNumberModel(Long.MAX_VALUE));
     hpInput.setOpaque(false);
   }
 
@@ -581,7 +600,7 @@ public class PlayersPanel extends JPanel {
   }
 
   private void createEpInput() {
-    epInput = new JSpinner(GuiFunctions.getNewNumberModel(0));
+    epInput = new JSpinner(GuiFunctions.getNewNumberModel(32));
     epInput.setOpaque(false);
   }
 
