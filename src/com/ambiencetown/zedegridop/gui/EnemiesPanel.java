@@ -355,7 +355,7 @@ public class EnemiesPanel extends JPanel {
 
           if (response == JFileChooser.APPROVE_OPTION) {
             savedFile = saveFileDialog.getSelectedFile();
-            if (!savedFile.getName().matches("[.]")) {
+            if (!savedFile.getName().contains(".")) {
               savedFile = new File(savedFile.getParentFile(), savedFile.getName() + ".json");
             }
             saveFileDialog.setCurrentDirectory(savedFile.getParentFile());
@@ -380,7 +380,10 @@ public class EnemiesPanel extends JPanel {
 
     reloadFileButton.addActionListener(_ -> loadFile());
   }
-  
+
+  /**
+   * Updates the components that depend on other panels' models.
+   */
   public void update() {
     int index = enemiesList.getSelectedIndex();
     buildAttacksList(enemies.get(index).getAttacks());
@@ -409,22 +412,13 @@ public class EnemiesPanel extends JPanel {
           listModel.addElement(inEnemy.getName());
         }
 
-        Enemy display = inEnemies.getFirst();
-
         enemiesList.setSelectedIndex(-1);
-
-        nameInput.setText(display.getName());
-        typeInput.setSelectedItem(display.getType());
-        hpInput.setValue(display.getHp());
-        defenseInput.setValue(display.getDefense());
-        etherDefenseInput.setValue(display.getEtherDefense());
-        speedInput.setValue(display.getSpeed());
-        attackInput.setValue(display.getAttack());
-        potentialInput.setValue(display.getPotential());
-
-        buildAttacksList(display.getAttacks());
-
         enemiesList.setSelectedIndex(0);
+
+        // Update the quick load button
+        reloadFileButton.setEnabled(true);
+        reloadFileButton.setText("Load " + loadedFile.getName());
+
       } else GuiFunctions.printSwingError("File " + loadedFile.getName() + " is empty!", this);
     } catch (DatabindException | StreamReadException e) {
       GuiFunctions.printSwingError(

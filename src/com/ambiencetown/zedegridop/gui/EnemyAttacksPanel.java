@@ -39,11 +39,15 @@ import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * JPanel for editing the details of the Enemy Attacks array.
+ *
+ * @author Serenity Montgomery
+ */
 public class EnemyAttacksPanel extends JPanel {
   private final List<EnemyAttack> enemyAttacks;
   private final EnemiesPanel enemiesPanel;
   private final ObjectMapper mapper;
-  private final GridBagLayout layout;
 
   private File savedFile;
   private File loadedFile;
@@ -139,7 +143,7 @@ public class EnemyAttacksPanel extends JPanel {
     this.enemiesPanel = enemiesPanel;
     this.mapper = mapper;
 
-    this.layout = new GridBagLayout();
+    GridBagLayout layout = new GridBagLayout();
     setLayout(layout);
 
     initializeComponents();
@@ -492,7 +496,7 @@ public class EnemyAttacksPanel extends JPanel {
         _ -> {
           int index = enemyAttacksList.getSelectedIndex();
           if (index >= 0) {
-            enemyAttacks.get(index).setMultiplier((int) multiplierInput.getValue());
+            enemyAttacks.get(index).setMultiplier((double) multiplierInput.getValue());
           }
         });
 
@@ -702,7 +706,7 @@ public class EnemyAttacksPanel extends JPanel {
 
           if (response == JFileChooser.APPROVE_OPTION) {
             savedFile = saveFileDialog.getSelectedFile();
-            if (!savedFile.getName().matches("[.]")) {
+            if (!savedFile.getName().contains(".")) {
               savedFile = new File(savedFile.getParentFile(), savedFile.getName() + ".json");
             }
             saveFileDialog.setCurrentDirectory(savedFile.getParentFile());
@@ -762,51 +766,13 @@ public class EnemyAttacksPanel extends JPanel {
         enemyAttacks.clear();
         listModel.clear();
 
-        for (int i = 0; i < inEnemyAttacks.size(); i++) {
-          enemyAttacks.add(inEnemyAttacks.get(i));
-          listModel.addElement(getAttackName(inEnemyAttacks.get(i)));
+        for (EnemyAttack inEnemyAttack : inEnemyAttacks) {
+          enemyAttacks.add(inEnemyAttack);
+          listModel.addElement(getAttackName(inEnemyAttack));
         }
         enemiesPanel.update();
 
-        // Reset display values to the first element for consistency
-        EnemyAttack display = inEnemyAttacks.getFirst();
-
         enemyAttacksList.setSelectedIndex(-1);
-
-        numberInput.setValue(display.getNumber());
-        titleInput.setText(display.getTitle());
-        descriptionInput.setText(display.getDescription());
-        hitsInput.setValue(display.getHits());
-        aoeInput.setSelected(display.isAoe());
-        accuracyInput.setValue(display.getAccuracy());
-        multiplierInput.setValue(display.getMultiplier());
-        dazeChanceInput.setValue(display.getDazeChance());
-        healInput.setSelected(display.isHeal());
-        leechInput.setSelected(display.isLeech());
-        typeInput.setSelectedItem(display.getType());
-        targetInput.setText(display.getTarget());
-        usePotentialInput.setSelected(display.isUsePotential());
-        flickerInput.setValue(display.getFlicker());
-        pointsInput.setValue(display.getPoints());
-        burnTimeInput.setValue(display.getBurnTime());
-        poisonTimeInput.setValue(display.getPoisonTime());
-
-        physicalDefenseEffectInput.setEffect(display.getPhysicalDefenseEffect());
-        physicalDefenseEffectInput.setTime(display.getPhysicalDefenseEffectTime());
-        physicalDefenseEffectInput.setChance(display.getPhysicalDefenseEffectChance());
-
-        physicalAttackEffectInput.setEffect(display.getPhysicalAttackEffect());
-        physicalAttackEffectInput.setTime(display.getPhysicalAttackEffectTime());
-        physicalAttackEffectInput.setChance(display.getPhysicalAttackEffectChance());
-
-        etherDefenseEffectInput.setEffect(display.getEtherDefenseEffect());
-        etherDefenseEffectInput.setTime(display.getEtherDefenseEffectTime());
-        etherDefenseEffectInput.setChance(display.getEtherDefenseEffectChance());
-
-        potentialEffectInput.setEffect(display.getPotentialEffect());
-        potentialEffectInput.setTime(display.getPotentialEffectTime());
-        potentialEffectInput.setChance(display.getPotentialEffectChance());
-
         enemyAttacksList.setSelectedIndex(0);
 
         // Update the quick load button
@@ -880,8 +846,6 @@ public class EnemyAttacksPanel extends JPanel {
   private void createNumberInput() {
     numberInput = new JSpinner(GuiFunctions.getNewNumberModel(255));
     numberInput.setValue(enemyAttacks.getFirst().getNumber());
-    //    numberInput.setPreferredSize(
-    //        new Dimension(100, (int) numberInput.getPreferredSize().getHeight()));
   }
 
   private void createTitleLabel() {

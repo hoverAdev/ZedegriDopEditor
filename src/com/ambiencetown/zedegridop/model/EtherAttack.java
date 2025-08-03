@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents an Ether attack in the Zedegri DOP Engine. Ether attacks are considered a type of
@@ -35,7 +36,7 @@ public class EtherAttack extends Attack {
   private int ep;
 
   /** The type of enemy the daze targets. */
-  private Set<EnemyType> dazeTarget;
+  private final Set<EnemyType> dazeTarget;
 
   /** Whether the attack inflicts Purge. */
   private boolean purge;
@@ -114,32 +115,32 @@ public class EtherAttack extends Attack {
    * @param speedUp the amount of Speed Up the attack grants.
    */
   public EtherAttack(
-      String user,
-      String title,
-      String description,
+      @NotNull String user,
+      @NotNull String title,
+      @NotNull String description,
       int ep,
       int hits,
       boolean aoe,
       int accuracy,
       double multiplier,
-      Set<EnemyType> dazeTarget,
+      @NotNull Set<EnemyType> dazeTarget,
       int dazeChance,
       boolean heal,
       boolean purge,
       boolean leech,
-      EtherAttackType type,
+      @NotNull EtherAttackType type,
       int burnTime,
       int poisonTime,
-      EffectMultiplier physicalDefenseEffect,
+      @NotNull EffectMultiplier physicalDefenseEffect,
       int physicalDefenseEffectTime,
       int physicalDefenseEffectChance,
-      EffectMultiplier physicalAttackEffect,
+      @NotNull EffectMultiplier physicalAttackEffect,
       int physicalAttackEffectTime,
       int physicalAttackEffectChance,
-      EffectMultiplier etherDefenseEffect,
+      @NotNull EffectMultiplier etherDefenseEffect,
       int etherDefenseEffectTime,
       int etherDefenseEffectChance,
-      EffectMultiplier potentialEffect,
+      @NotNull EffectMultiplier potentialEffect,
       int potentialEffectTime,
       int potentialEffectChance,
       int physicalDefenseUp,
@@ -173,7 +174,7 @@ public class EtherAttack extends Attack {
         potentialEffectChance);
     setUser(user);
     setEp(ep);
-    setDazeTarget(dazeTarget);
+    this.dazeTarget = new HashSet<>(dazeTarget);
     setPurge(purge);
     setType(type);
     setPhysicalDefenseUp(physicalDefenseUp);
@@ -188,11 +189,11 @@ public class EtherAttack extends Attack {
    *
    * @param etherAttack the Ether Attack to copy.
    */
-  public EtherAttack(EtherAttack etherAttack) {
+  public EtherAttack(@NotNull EtherAttack etherAttack) {
     super(etherAttack);
     setUser(etherAttack.getUser());
     setEp(etherAttack.getEp());
-    setDazeTarget(new HashSet<>(etherAttack.getDazeTarget()));
+    dazeTarget = new HashSet<>(etherAttack.getDazeTarget());
     setPurge(etherAttack.isPurge());
     setType(etherAttack.getType());
     setPhysicalDefenseUp(etherAttack.getPhysicalDefenseUp());
@@ -214,7 +215,7 @@ public class EtherAttack extends Attack {
    * @param user the user of the attack.
    */
   @JsonProperty("User")
-  public void setUser(String user) {
+  public void setUser(@NotNull String user) {
     this.user = user;
   }
 
@@ -232,11 +233,16 @@ public class EtherAttack extends Attack {
   @JsonProperty("EP")
   public void setEp(int ep) {
     this.ep = Math.max(0, Math.min(ep, 8));
+    if (this.ep != ep)
+      System.err.println(
+          "Invalid EP cost given. EP cost has been set to the nearest valid value, "
+              + this.ep
+              + ".");
   }
 
   /** {@return the types of enemy the daze targets.} */
   @JsonIgnore
-  public Set<EnemyType> getDazeTarget() {
+  public @NotNull Set<EnemyType> getDazeTarget() {
     return dazeTarget;
   }
 
@@ -258,21 +264,10 @@ public class EtherAttack extends Attack {
   }
 
   /**
-   * Sets the types of enemy the daze targets.
-   *
-   * @param dazeTarget the type of enemy the daze targets.
-   */
-  @JsonIgnore
-  public void setDazeTarget(Set<EnemyType> dazeTarget) {
-    this.dazeTarget = dazeTarget;
-  }
-
-  /**
    * A special deserializer to enable compatibility with existing code.
    *
    * @param dazeTarget A string containing the names of all the relevant EnemyTypes. Treated without
    *     case-sensitivity.
-   * @see EtherAttack#setDazeTarget(Set)
    */
   @JsonProperty("Daze_Target")
   public void setDazeTargetJson(String dazeTarget) {
@@ -312,7 +307,7 @@ public class EtherAttack extends Attack {
    * @param type the type of the attack.
    */
   @JsonProperty("Type")
-  public void setType(EtherAttackType type) {
+  public void setType(@NotNull EtherAttackType type) {
     this.type = type;
   }
 
@@ -342,6 +337,12 @@ public class EtherAttack extends Attack {
   @JsonIgnore
   public void setPhysicalDefenseUp(int physicalDefenseUp) {
     this.physicalDefenseUp = Math.max(0, Math.min(physicalDefenseUp, 8));
+    if (this.physicalDefenseUp != physicalDefenseUp) {
+      System.err.println(
+          "Invalid Physical Defense Up given. Physical Defense Up has been set to the nearest valid value, "
+              + this.physicalDefenseUp
+              + ".");
+    }
   }
 
   /**
@@ -386,6 +387,12 @@ public class EtherAttack extends Attack {
   @JsonIgnore
   public void setPhysicalAttackUp(int physicalAttackUp) {
     this.physicalAttackUp = Math.max(0, Math.min(physicalAttackUp, 8));
+    if (this.physicalAttackUp != physicalAttackUp) {
+      System.err.println(
+          "Invalid Physical Attack Up given. Physical Attack Up has been set to the nearest valid value, "
+              + this.physicalAttackUp
+              + ".");
+    }
   }
 
   /**
@@ -429,6 +436,12 @@ public class EtherAttack extends Attack {
   @JsonIgnore
   public void setEtherDefenseUp(int etherDefenseUp) {
     this.etherDefenseUp = Math.max(0, Math.min(etherDefenseUp, 8));
+    if (this.etherDefenseUp != etherDefenseUp) {
+      System.err.println(
+          "Invalid Ether Defense Up given. Ether Defense Up has been set to the nearest valid value, "
+              + this.etherDefenseUp
+              + ".");
+    }
   }
 
   /**
@@ -472,6 +485,12 @@ public class EtherAttack extends Attack {
   @JsonIgnore
   public void setPotentialUp(int potentialUp) {
     this.potentialUp = Math.max(0, Math.min(potentialUp, 8));
+    if (this.potentialUp != potentialUp) {
+      System.err.println(
+          "Invalid Ether Attack Up given. Ether Attack Up has been set to the nearest valid value, "
+              + this.potentialUp
+              + ".");
+    }
   }
 
   /**
@@ -503,6 +522,12 @@ public class EtherAttack extends Attack {
   @JsonProperty("SPD_UP")
   public void setSpeedUp(int speedUp) {
     this.speedUp = Math.max(0, Math.min(speedUp, 8));
+    if (this.speedUp != speedUp) {
+      System.err.println(
+          "Invalid Speed Up given. Speed Up has been set to the nearest valid value, "
+              + this.speedUp
+              + ".");
+    }
   }
 
   @Override

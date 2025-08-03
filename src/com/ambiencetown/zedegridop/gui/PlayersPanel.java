@@ -385,7 +385,7 @@ public class PlayersPanel extends JPanel {
 
           if (response == JFileChooser.APPROVE_OPTION) {
             savedFile = saveFileDialog.getSelectedFile();
-            if (!savedFile.getName().matches("[.]")) {
+            if (!savedFile.getName().contains(".")) {
               savedFile = new File(savedFile.getParentFile(), savedFile.getName() + ".json");
             }
             saveFileDialog.setCurrentDirectory(savedFile.getParentFile());
@@ -440,21 +440,7 @@ public class PlayersPanel extends JPanel {
         }
         ethersPanel.update();
 
-        // Reset display values to the first element for consistency
-        Player display = inPlayers.getFirst();
-
         playersList.setSelectedIndex(-1);
-
-        nameInput.setText(display.getName());
-        hpInput.setValue(display.getHp());
-        defenseInput.setValue(display.getDefense());
-        etherDefenseInput.setValue(display.getEtherDefense());
-        speedInput.setValue(display.getSpeed());
-        attackInput.setValue(display.getAttack());
-        potentialInput.setValue(display.getPotential());
-        apInput.setValue(display.getAp());
-        epInput.setValue(display.getEp());
-
         playersList.setSelectedIndex(0);
 
         // Update the quick load button

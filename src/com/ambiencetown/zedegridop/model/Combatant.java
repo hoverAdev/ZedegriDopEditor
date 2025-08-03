@@ -57,7 +57,13 @@ public abstract class Combatant {
    * @param potential the potential of the combatant.
    */
   protected Combatant(
-      @NotNull String name, long hp, int defense, int etherDefense, int speed, int attack, int potential) {
+      @NotNull String name,
+      long hp,
+      int defense,
+      int etherDefense,
+      int speed,
+      int attack,
+      int potential) {
     // Use setters for input validation
     setName(name);
     setHp(hp);
@@ -73,7 +79,7 @@ public abstract class Combatant {
    *
    * @param combatant The combatant to copy.
    */
-  protected Combatant(Combatant combatant) {
+  protected Combatant(@NotNull Combatant combatant) {
     setName(combatant.getName());
     setHp(combatant.getHp());
     setDefense(combatant.getDefense());
@@ -112,7 +118,11 @@ public abstract class Combatant {
    */
   @JsonProperty("HP")
   public void setHp(long hp) {
-    this.hp = hp;
+    this.hp = Math.max(0, hp);
+    if (this.hp != hp) {
+      System.err.println(
+          "Invalid HP given. HP has been set to the nearest valid value, " + this.hp + ".");
+    }
   }
 
   /** {@return the defense of the combatant.} */
@@ -128,7 +138,13 @@ public abstract class Combatant {
    */
   @JsonProperty("DEF")
   public void setDefense(int defense) {
-    this.defense = defense;
+    this.defense = Math.max(0, defense);
+    if (this.defense != defense) {
+      System.err.println(
+          "Invalid Defense given. Defense has been set to the nearest valid value, "
+              + this.defense
+              + ".");
+    }
   }
 
   /** {@return the ether defense of the combatant.} */
@@ -144,7 +160,13 @@ public abstract class Combatant {
    */
   @JsonProperty("EthDEF")
   public void setEtherDefense(int etherDefense) {
-    this.etherDefense = etherDefense;
+    this.etherDefense = Math.max(0, etherDefense);
+    if (this.etherDefense != etherDefense) {
+      System.err.println(
+          "Invalid Ether Defense given. Ether Defense has been set to the nearest valid value, "
+              + this.etherDefense
+              + ".");
+    }
   }
 
   /** {@return the speed of the combatant.} */
@@ -173,6 +195,12 @@ public abstract class Combatant {
   @JsonIgnore
   public void setSpeed(int speed) {
     this.speed = Math.max(0, Math.min(speed, 255));
+    if (this.speed != speed) {
+      System.err.println(
+          "Invalid speed given. Speed has been set to the nearest valid value, "
+              + this.speed
+              + ".");
+    }
   }
 
   @JsonProperty("Speed")
@@ -197,7 +225,13 @@ public abstract class Combatant {
    */
   @JsonProperty("Attack")
   public void setAttack(int attack) {
-    this.attack = attack;
+    this.attack = Math.max(0, attack);
+    if (this.attack != attack) {
+      System.err.println(
+          "Invalid attack given. Attack has been set to the nearest valid value, "
+              + this.attack
+              + ".");
+    }
   }
 
   /** {@return the potential of the combatant.} */
@@ -213,7 +247,13 @@ public abstract class Combatant {
    */
   @JsonProperty("Potent")
   public void setPotential(int potential) {
-    this.potential = potential;
+    this.potential = Math.max(0, potential);
+    if (this.potential != potential) {
+      System.err.println(
+          "Invalid potential given. Potential has been set to the nearest valid value, "
+              + this.potential
+              + ".");
+    }
   }
 
   @Contract(value = "null -> false", pure = true)

@@ -43,7 +43,16 @@ public class Enemy extends Combatant {
    * @param potential the potential of the enemy combatant.
    * @param attacks the list of attacks of the enemy.
    */
-  public Enemy(String name, EnemyType type, long hp, int defense, int etherDefense, int speed, int attack, int potential, Set<Integer> attacks) {
+  public Enemy(
+      @NotNull String name,
+      EnemyType type,
+      long hp,
+      int defense,
+      int etherDefense,
+      int speed,
+      int attack,
+      int potential,
+      @NotNull Set<Integer> attacks) {
     // Use setters for input validation
     super(name, hp, defense, etherDefense, speed, attack, potential);
     setType(type);
@@ -55,7 +64,7 @@ public class Enemy extends Combatant {
    *
    * @param enemy The Enemy to copy.
    */
-  public Enemy(Enemy enemy) {
+  public Enemy(@NotNull Enemy enemy) {
     super(enemy);
     setType(enemy.getType());
     attacks = new HashSet<>(enemy.getAttacks());

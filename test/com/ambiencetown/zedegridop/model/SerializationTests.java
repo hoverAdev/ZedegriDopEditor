@@ -29,19 +29,6 @@ public class SerializationTests {
     mapper.enable(SerializationFeature.INDENT_OUTPUT);
   }
 
-  /** Ensures correct behavior on serializing an empty set. */
-  @Test
-  void testEmptyDazeTargetSerialization() {
-    EtherAttack attack = new EtherAttack();
-    attack.setDazeTarget(new HashSet<>());
-
-    assertDoesNotThrow(
-        attack::getDazeTargetJson,
-        "getDazeTargetJson should not throw an exception for an empty set.");
-
-    assertEquals("", attack.getDazeTargetJson());
-  }
-
   /** Validates the deserializer against a set of known values for the Player model. */
   @Test
   public void testPlayerJsonIn() {

@@ -1,6 +1,5 @@
 package com.ambiencetown.zedegridop.gui;
 
-import com.ambiencetown.zedegridop.model.EnemyAttack;
 import com.ambiencetown.zedegridop.model.EnemyType;
 import com.ambiencetown.zedegridop.model.EtherAttack;
 import com.ambiencetown.zedegridop.model.EtherAttackType;
@@ -11,7 +10,6 @@ import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.io.File;
 import java.io.IOException;
@@ -42,11 +40,15 @@ import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * JPanel for editing the details of the Ether attacks array.
+ *
+ * @author Serenity Montgomery
+ */
 public class EthersPanel extends JPanel {
   private final List<EtherAttack> ethers;
   private final List<Player> players;
   private final ObjectMapper mapper;
-  private final GridBagLayout layout;
 
   private File savedFile;
   private File loadedFile;
@@ -159,7 +161,7 @@ public class EthersPanel extends JPanel {
     this.players = players;
     this.mapper = mapper;
 
-    this.layout = new GridBagLayout();
+    GridBagLayout layout = new GridBagLayout();
     setLayout(layout);
 
     initializeComponents();
@@ -421,6 +423,7 @@ public class EthersPanel extends JPanel {
           int index = ethersList.getSelectedIndex();
           if (index >= 0) {
             String user = (String) userInput.getSelectedItem();
+            if (user == null) user = "";
             ethers.get(index).setUser(user);
           }
         });
@@ -707,7 +710,7 @@ public class EthersPanel extends JPanel {
 
       if (response == JFileChooser.APPROVE_OPTION) {
         savedFile = saveFileDialog.getSelectedFile();
-        if (!savedFile.getName().matches("[.]")) {
+        if (!savedFile.getName().contains(".")) {
           savedFile = new File(savedFile.getParentFile(), savedFile.getName() + ".json");
         }
         saveFileDialog.setCurrentDirectory(savedFile.getParentFile());
@@ -754,51 +757,10 @@ public class EthersPanel extends JPanel {
           listModel.addElement(inEther.getTitle());
         }
 
-        EtherAttack display = inEthers.getFirst();
-
         ethersList.setSelectedIndex(-1);
-
-        userInput.setSelectedItem(display.getUser());
-        titleInput.setText(display.getTitle());
-        descriptionInput.setText(display.getDescription());
-        epInput.setValue(display.getEp());
-        hitsInput.setValue(display.getHits());
-        aoeInput.setSelected(display.isAoe());
-        accuracyInput.setValue(display.getAccuracy());
-        multiplierInput.setValue(display.getMultiplier());
-        updateDazeTarget(display.getDazeTarget());
-        dazeChanceInput.setValue(display.getDazeChance());
-        healInput.setSelected(display.isHeal());
-        purgeInput.setSelected(display.isPurge());
-        leechInput.setSelected(display.isLeech());
-        typeInput.setSelectedItem(display.getType());
-        burnTimeInput.setValue(display.getBurnTime());
-        poisonTimeInput.setValue(display.getPoisonTime());
-
-        physicalDefenseUpInput.setValue(display.getPhysicalDefenseUp());
-        physicalAttackUpInput.setValue(display.getPhysicalAttackUp());
-        etherDefenseUpInput.setValue(display.getEtherDefenseUp());
-        potentialUpInput.setValue(display.getPotentialUp());
-        speedUpInput.setValue(display.getSpeedUp());
-
-        physicalDefenseEffectInput.setEffect(display.getPhysicalDefenseEffect());
-        physicalDefenseEffectInput.setTime(display.getPhysicalDefenseEffectTime());
-        physicalDefenseEffectInput.setChance(display.getPhysicalDefenseEffectChance());
-
-        physicalAttackEffectInput.setEffect(display.getPhysicalAttackEffect());
-        physicalAttackEffectInput.setTime(display.getPhysicalAttackEffectTime());
-        physicalAttackEffectInput.setChance(display.getPhysicalAttackEffectChance());
-
-        etherDefenseEffectInput.setEffect(display.getEtherDefenseEffect());
-        etherDefenseEffectInput.setTime(display.getEtherDefenseEffectTime());
-        etherDefenseEffectInput.setChance(display.getEtherDefenseEffectChance());
-
-        potentialEffectInput.setEffect(display.getPotentialEffect());
-        potentialEffectInput.setTime(display.getPotentialEffectTime());
-        potentialEffectInput.setChance(display.getPotentialEffectChance());
-
         ethersList.setSelectedIndex(0);
 
+        // Update the quick load button
         reloadFileButton.setEnabled(true);
         reloadFileButton.setText(("Load " + loadedFile.getName()));
       } else GuiFunctions.printSwingError("File " + loadedFile.getName() + " is empty!", this);
@@ -826,7 +788,7 @@ public class EthersPanel extends JPanel {
     listPanel = new JPanel();
     listPanel.setLayout(new GridBagLayout());
     listPanel.setOpaque(false);
-    listPanel.setBorder(new TitledBorder(new LineBorder(Color.GRAY, 1), "Ether Attacks"));
+    listPanel.setBorder(new TitledBorder(new LineBorder(Color.GRAY, 1), "Ether Arts"));
   }
 
   private void createListModel() {

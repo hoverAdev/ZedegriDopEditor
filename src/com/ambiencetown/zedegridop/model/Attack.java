@@ -145,8 +145,8 @@ public abstract class Attack {
    *     percentage.
    */
   protected Attack(
-      String title,
-      String description,
+      @NotNull String title,
+      @NotNull String description,
       int hits,
       boolean aoe,
       int accuracy,
@@ -156,16 +156,16 @@ public abstract class Attack {
       boolean leech,
       int burnTime,
       int poisonTime,
-      EffectMultiplier physicalDefenseEffect,
+      @NotNull EffectMultiplier physicalDefenseEffect,
       int physicalDefenseEffectTime,
       int physicalDefenseEffectChance,
-      EffectMultiplier physicalAttackEffect,
+      @NotNull EffectMultiplier physicalAttackEffect,
       int physicalAttackEffectTime,
       int physicalAttackEffectChance,
-      EffectMultiplier etherDefenseEffect,
+      @NotNull EffectMultiplier etherDefenseEffect,
       int etherDefenseEffectTime,
       int etherDefenseEffectChance,
-      EffectMultiplier potentialEffect,
+      @NotNull EffectMultiplier potentialEffect,
       int potentialEffectTime,
       int potentialEffectChance) {
     // Use setters for input validation
@@ -199,7 +199,7 @@ public abstract class Attack {
    *
    * @param attack The Attack to copy.
    */
-  protected Attack(Attack attack) {
+  protected Attack(@NotNull Attack attack) {
     setTitle(attack.getTitle());
     setDescription(attack.getDescription());
     setHits(attack.getHits());
@@ -271,6 +271,10 @@ public abstract class Attack {
   @JsonProperty("Hits")
   public void setHits(int hits) {
     this.hits = Math.max(0, Math.min(hits, 16));
+    if (this.hits != hits) {
+      System.err.println(
+          "Invalid hits given. Hits has been set to the nearest valid value, " + this.hits + ".");
+    }
   }
 
   /** {@return whether the attack hits multiple enemies.} */
@@ -304,6 +308,12 @@ public abstract class Attack {
   @JsonProperty("Acc")
   public void setAccuracy(int accuracy) {
     this.accuracy = constrainToIntegerPercentage(accuracy);
+    if (this.accuracy != accuracy) {
+      System.err.println(
+          "Invalid accuracy given. Accuracy has been set to the nearest valid value, "
+              + this.accuracy
+              + ".");
+    }
   }
 
   /** {@return the attack damage modifier as a float multiplier.} */
@@ -320,6 +330,13 @@ public abstract class Attack {
   @JsonProperty("Mult")
   public void setMultiplier(double multiplier) {
     this.multiplier = multiplier;
+    // TODO: Convince Fiora to tell me what the bounds for this should be and then implement them
+    if (this.multiplier != multiplier) {
+      System.err.println(
+          "Invalid multiplier given. Multiplier has been set to the nearest valid value, "
+              + this.multiplier
+              + ".");
+    }
   }
 
   /** {@return the chance that the attack will inflict Daze as an integer percentage.} */
@@ -338,6 +355,12 @@ public abstract class Attack {
   @JsonProperty("Daze_Percent")
   public void setDazeChance(int dazeChance) {
     this.dazeChance = constrainToIntegerPercentage(dazeChance);
+    if (this.dazeChance != dazeChance) {
+      System.err.println(
+          "Invalid daze chance given. Daze chance has been set to the nearest valid value, "
+              + this.dazeChance
+              + ".");
+    }
   }
 
   /** {@return whether the attack is a healing attack.} */
@@ -408,6 +431,12 @@ public abstract class Attack {
   @JsonProperty("BURN_TM")
   public void setBurnTime(int burnTime) {
     this.burnTime = Math.max(0, Math.min(burnTime, 32));
+    if (this.burnTime != burnTime) {
+      System.err.println(
+          "Invalid burn time given. Burn time has been set to the nearest valid value, "
+              + this.burnTime
+              + ".");
+    }
   }
 
   /** {@return the number of turns to inflict Poison.} */
@@ -424,6 +453,12 @@ public abstract class Attack {
   @JsonProperty("POISON_TM")
   public void setPoisonTime(int poisonTime) {
     this.poisonTime = Math.max(0, Math.min(poisonTime, 32));
+    if (this.poisonTime != poisonTime) {
+      System.err.println(
+          "Invalid poison time given. Poison time has been set to the nearest valid value, "
+              + this.poisonTime
+              + ".");
+    }
   }
 
   /** {@return the physical defense buff or debuff applied by the attack.} */
@@ -478,6 +513,12 @@ public abstract class Attack {
   @JsonProperty("PHYS_DEF_TM")
   public void setPhysicalDefenseEffectTime(int physicalDefenseEffectTime) {
     this.physicalDefenseEffectTime = Math.max(0, Math.min(physicalDefenseEffectTime, 32));
+    if (this.physicalDefenseEffectTime != physicalDefenseEffectTime) {
+      System.err.println(
+          "Invalid physical defense effect time given. Physical defense effect time has been set to the nearest valid value, "
+              + this.physicalDefenseEffectTime
+              + ".");
+    }
   }
 
   /**
@@ -499,6 +540,12 @@ public abstract class Attack {
   @JsonProperty("PHYS_DEF_CH")
   public void setPhysicalDefenseEffectChance(int physicalDefenseEffectChance) {
     this.physicalDefenseEffectChance = constrainToIntegerPercentage(physicalDefenseEffectChance);
+    if (this.physicalDefenseEffectChance != physicalDefenseEffectChance) {
+      System.err.println(
+          "Invalid physical defense effect chance given. Physical defense effect chance has been set to the nearest valid value, "
+              + this.physicalDefenseEffectChance
+              + ".");
+    }
   }
 
   /** {@return the physical attack buff or debuff applied by the attack.} */
@@ -553,6 +600,12 @@ public abstract class Attack {
   @JsonProperty("PHYS_ATK_TM")
   public void setPhysicalAttackEffectTime(int physicalAttackEffectTime) {
     this.physicalAttackEffectTime = Math.max(0, Math.min(physicalAttackEffectTime, 32));
+    if (this.physicalAttackEffectTime != physicalAttackEffectTime) {
+      System.err.println(
+          "Invalid physical attack effect time given. Physical attack effect time has been set to the nearest valid value, "
+              + this.physicalAttackEffectTime
+              + ".");
+    }
   }
 
   /**
@@ -572,6 +625,12 @@ public abstract class Attack {
   @JsonProperty("PHYS_ATK_CH")
   public void setPhysicalAttackEffectChance(int physicalAttackEffectChance) {
     this.physicalAttackEffectChance = constrainToIntegerPercentage(physicalAttackEffectChance);
+    if (this.physicalAttackEffectChance != physicalAttackEffectChance) {
+      System.err.println(
+          "Invalid physical attack effect chance given. Physical attack effect chance has been set to the nearest valid value, "
+              + this.physicalAttackEffectChance
+              + ".");
+    }
   }
 
   /** {@return the ether defense buff or debuff applied by the attack.} */
@@ -643,6 +702,12 @@ public abstract class Attack {
   @JsonProperty("ETH_DEF_CH")
   public void setEtherDefenseEffectChance(int etherDefenseEffectChance) {
     this.etherDefenseEffectChance = constrainToIntegerPercentage(etherDefenseEffectChance);
+    if (this.etherDefenseEffectChance != etherDefenseEffectChance) {
+      System.err.println(
+          "Invalid ether defense effect chance given. Ether defense effect chance has been set to the nearest valid value, "
+              + this.etherDefenseEffectChance
+              + ".");
+    }
   }
 
   /** {@return the potential buff or debuff applied by the attack.} */
@@ -697,6 +762,12 @@ public abstract class Attack {
   @JsonProperty("ETH_ATK_TM")
   public void setPotentialEffectTime(int potentialEffectTime) {
     this.potentialEffectTime = Math.max(0, Math.min(potentialEffectTime, 32));
+    if (this.potentialEffectTime != potentialEffectTime) {
+      System.err.println(
+          "Invalid potential effect time given. Potential effect time has been set to the nearest valid value, "
+              + this.potentialEffectTime
+              + ".");
+    }
   }
 
   /** {@return the chance to inflict the potential buff or debuff as an integer percentage.} */
@@ -716,6 +787,12 @@ public abstract class Attack {
   @JsonProperty("ETH_ATK_CH")
   public void setPotentialEffectChance(int potentialEffectChance) {
     this.potentialEffectChance = constrainToIntegerPercentage(potentialEffectChance);
+    if (this.potentialEffectChance != potentialEffectChance) {
+      System.err.println(
+          "Invalid potential effect chance given. Potential effect chance has been set to the nearest valid value, "
+              + this.potentialEffectChance
+              + ".");
+    }
   }
 
   /**

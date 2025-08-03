@@ -2,6 +2,7 @@ package com.ambiencetown.zedegridop.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents a player {@link Combatant} in the Zedegri DOP Engine.
@@ -36,7 +37,16 @@ public class Player extends Combatant {
    * @param ap the amount of Attack Points the player has.
    * @param ep the amount of Ether Points the player has.
    */
-  public Player(String name, long hp, int defense, int etherDefense, int speed, int attack, int potential, int ap, int ep) {
+  public Player(
+      @NotNull String name,
+      long hp,
+      int defense,
+      int etherDefense,
+      int speed,
+      int attack,
+      int potential,
+      int ap,
+      int ep) {
     super(name, hp, defense, etherDefense, speed, attack, potential);
     setAp(ap);
     setEp(ep);
@@ -47,7 +57,7 @@ public class Player extends Combatant {
    *
    * @param player The player to copy.
    */
-  public Player(Player player) {
+  public Player(@NotNull Player player) {
     super(player);
     setAp(player.getAp());
     setEp(player.getEp());
@@ -67,6 +77,9 @@ public class Player extends Combatant {
   @JsonProperty("AP")
   public void setAp(int ap) {
     this.ap = Math.max(4, Math.min(ap, 7));
+    if (this.ap != ap)
+      System.err.println(
+          "Invalid AP given. AP has been set to the nearest valid value, " + this.ap + ".");
   }
 
   /** {@return the amount of Ether Points the player has.} */
@@ -83,6 +96,9 @@ public class Player extends Combatant {
   @JsonProperty("EP")
   public void setEp(int ep) {
     this.ep = Math.max(0, Math.min(ep, 32));
+    if (this.ep != ep)
+      System.err.println(
+          "Invalid EP given. EP has been set to the nearest valid value, " + this.ep + ".");
   }
 
   @Override
